@@ -8,8 +8,8 @@
   :root {
     --navy: #1F3864;
     --blue: #2E5FA3;
-    --lblue: #BDD7EE;
-    --accent: #1F3864;
+    --lblue: #D9E2F3;
+    --accent: #4472C4;
     --bg: #F7F8FA;
     --surface: #FFFFFF;
     --border: #E2E6ED;
@@ -180,54 +180,64 @@
       </div>
     </div>
 
-    <!-- Step 2: Program Config -->
+    <!-- Step 2 & 3: Program Config + Pricing -->
     <div class="card">
       <div class="section-header">
         <span class="step-badge">2</span>
-        <span class="section-header-title">Program configuration</span>
+        <span class="section-header-title">Tier 1 — Single meeting</span>
       </div>
-      <div class="row3">
-        <div class="field"><label>Est. members</label><input id="members" type="number" value="20" min="5" max="60"/></div>
-        <div class="field"><label>In-person meetings / yr</label><input id="inperson" type="number" value="2" min="1" max="4"/></div>
-        <div class="field"><label>Virtual sessions / yr</label><input id="virtual" type="number" value="2" min="0" max="4"/></div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;font-weight:500;color:var(--muted);">Include in proposal?</label>
+        <div class="toggles" style="margin-top:5px">
+          <div class="tb on" id="tog-t1" onclick="tog('t1')">Yes — include Tier 1</div>
+        </div>
       </div>
-      <div class="row2">
-        <div class="field">
-          <label>Tiers to present</label>
-          <div class="toggles">
-            <div class="tb on" id="tog-t1" onclick="tog('t1')">Tier 1 — single meeting</div>
-            <div class="tb on" id="tog-t2" onclick="tog('t2')">Tier 2 — annual program</div>
+      <div id="t1-config">
+        <div class="row3">
+          <div class="field"><label>Members</label><input id="t1-members" type="number" value="20" min="1" max="100" oninput="updatePricing()"/></div>
+          <div class="field"><label>In-person meetings</label><input id="t1-ip" type="number" value="1" min="0" max="4" oninput="updatePricing()"/></div>
+          <div class="field"><label>Virtual sessions</label><input id="t1-virt" type="number" value="0" min="0" max="4" oninput="updatePricing()"/></div>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;font-weight:500;color:var(--muted);">Include research project? (+$20,000)</label>
+          <div class="toggles" style="margin-top:5px">
+            <div class="tb" id="tog-t1r" onclick="togResearch('t1')">No</div>
           </div>
         </div>
-        <div class="field">
-          <label>Pricing models to present</label>
-          <div class="toggles">
-            <div class="tb on" id="tog-ma" onclick="tog('ma')">Model A (sponsor + member)</div>
-            <div class="tb on" id="tog-mb" onclick="tog('mb')">Model B (sponsor pays all)</div>
-          </div>
-        </div>
+        <div class="field" style="margin-bottom:12px"><label>Member seat fee — Tier 1</label><input id="mf1" type="number" value="1000" oninput="updatePricing()"/></div>
+        <div id="t1-breakdown" style="background:var(--bg);border-radius:var(--radius-sm);padding:.9rem;font-size:12px;border:1px solid var(--border)"></div>
       </div>
     </div>
 
-    <!-- Step 3: Pricing -->
     <div class="card">
       <div class="section-header">
         <span class="step-badge">3</span>
-        <span class="section-header-title">Pricing inputs</span>
+        <span class="section-header-title">Tier 2 — Annual program</span>
       </div>
-      <div class="row2">
-        <div class="field"><label>Sponsor fee — Tier 1</label><input id="sf1" type="number" value="50000"/></div>
-        <div class="field"><label>Member seat fee — Tier 1</label><input id="mf1" type="number" value="1000"/></div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;font-weight:500;color:var(--muted);">Include in proposal?</label>
+        <div class="toggles" style="margin-top:5px">
+          <div class="tb on" id="tog-t2" onclick="tog('t2')">Yes — include Tier 2</div>
+        </div>
       </div>
-      <div class="row2">
-        <div class="field"><label>Sponsor fee — Tier 2</label><input id="sf2" type="number" value="145000"/></div>
-        <div class="field"><label>Member seat fee — Tier 2</label><input id="mf2" type="number" value="8500"/></div>
+      <div id="t2-config">
+        <div class="row3">
+          <div class="field"><label>Members</label><input id="t2-members" type="number" value="20" min="1" max="100" oninput="updatePricing()"/></div>
+          <div class="field"><label>In-person meetings / yr</label><input id="t2-ip" type="number" value="2" min="0" max="6" oninput="updatePricing()"/></div>
+          <div class="field"><label>Virtual sessions / yr</label><input id="t2-virt" type="number" value="2" min="0" max="6" oninput="updatePricing()"/></div>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;font-weight:500;color:var(--muted);">Include research project? (+$20,000)</label>
+          <div class="toggles" style="margin-top:5px">
+            <div class="tb on" id="tog-t2r" onclick="togResearch('t2')">Yes</div>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:12px"><label>Member seat fee — Tier 2</label><input id="mf2" type="number" value="8500" oninput="updatePricing()"/></div>
+        <div id="t2-breakdown" style="background:var(--bg);border-radius:var(--radius-sm);padding:.9rem;font-size:12px;border:1px solid var(--border)"></div>
       </div>
-      <div class="row2">
-        <div class="field"><label>Model B — Tier 1 total</label><input id="bt1" type="number" value="70000"/></div>
-        <div class="field"><label>Model B — Tier 2 total</label><input id="bt2" type="number" value="315000"/></div>
+      <div style="margin-top:1rem;padding:.9rem;background:#EFF6FF;border-radius:var(--radius-sm);border:1px solid #BFDBFE;font-size:12px;color:#1E40AF;line-height:1.6">
+        <strong>Billing note:</strong> Many PE sponsors recharge membership fees back to portfolio companies directly. Alternatively, NeuGroup can handle invoicing. Billing structure is flexible and can be discussed once a tier is selected.
       </div>
-      <div id="price-summary" class="price-grid"></div>
     </div>
 
     <!-- Step 4: Context -->
@@ -324,12 +334,25 @@ document.getElementById('yr').textContent = new Date().getFullYear();
 document.getElementById('qdate').value = new Date().toISOString().slice(0,10);
 
 // ── State ────────────────────────────────────────────────────────────────────
-const S = { t1:true, t2:true, ma:true, mb:true };
+const S = { t1:true, t2:true, t1r:false, t2r:true };
 let generatedProposal = '', generatedEmail = '';
+
+const RATES = { ip: 42500, virt: 20000, research: 20000 };
 
 function tog(k) {
   S[k] = !S[k];
   document.getElementById('tog-'+k).classList.toggle('on', S[k]);
+  if(k==='t1') document.getElementById('t1-config').style.opacity = S.t1 ? '1' : '0.4';
+  if(k==='t2') document.getElementById('t2-config').style.opacity = S.t2 ? '1' : '0.4';
+  updatePricing();
+}
+
+function togResearch(tier) {
+  const key = tier+'r';
+  S[key] = !S[key];
+  const btn = document.getElementById('tog-'+tier+'r');
+  btn.classList.toggle('on', S[key]);
+  btn.textContent = S[key] ? 'Yes' : 'No';
   updatePricing();
 }
 
@@ -337,19 +360,32 @@ function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
 function v(id)  { return parseFloat(document.getElementById(id).value) || 0; }
 function g(id)  { return document.getElementById(id).value || ''; }
 
+function calcTier(ip, virt, research, members, mf) {
+  const sponsorFee = ip*RATES.ip + virt*RATES.virt + (research ? RATES.research : 0);
+  const memberFees = members * mf;
+  return { sponsorFee, memberFees, total: sponsorFee + memberFees, ip, virt, research, members, mf };
+}
+
+function renderBreakdown(el, t) {
+  const lines = [];
+  if(t.ip > 0) lines.push(`${t.ip} in-person meeting${t.ip>1?'s':''} × ${fmt(RATES.ip)} = ${fmt(t.ip*RATES.ip)}`);
+  if(t.virt > 0) lines.push(`${t.virt} virtual session${t.virt>1?'s':''} × ${fmt(RATES.virt)} = ${fmt(t.virt*RATES.virt)}`);
+  if(t.research) lines.push(`Research project = ${fmt(RATES.research)}`);
+  lines.push(`<strong>Sponsor fee: ${fmt(t.sponsorFee)}</strong>`);
+  lines.push(`Member fees: ${t.members} members × ${fmt(t.mf)}/seat = ${fmt(t.memberFees)}`);
+  lines.push(`<strong style="color:var(--navy);font-size:14px">Total program: ${fmt(t.total)}</strong>`);
+  el.innerHTML = lines.join('<br>');
+}
+
 function updatePricing() {
-  const m=v('members'),sf1=v('sf1'),mf1=v('mf1'),sf2=v('sf2'),mf2=v('mf2'),bt1=v('bt1'),bt2=v('bt2');
-  const cards = [];
-  if(S.t1&&S.ma) cards.push({l:'Tier 1 · Model A', v:fmt(sf1+m*mf1), s:'Sponsor '+fmt(sf1)+' + '+fmt(mf1)+'/seat'});
-  if(S.t2&&S.ma) cards.push({l:'Tier 2 · Model A', v:fmt(sf2+m*mf2), s:'Sponsor '+fmt(sf2)+' + '+fmt(mf2)+'/seat', hi:true});
-  if(S.t1&&S.mb) cards.push({l:'Tier 1 · Model B', v:fmt(bt1), s:'Sponsor pays all'});
-  if(S.t2&&S.mb) cards.push({l:'Tier 2 · Model B', v:fmt(bt2), s:'Sponsor pays all', hi:true});
-  document.getElementById('price-summary').innerHTML = cards.map(c=>`
-    <div class="pcard${c.hi?' hi':''}">
-      <div class="pl">${c.l}</div>
-      <div class="pv">${c.v}</div>
-      <div class="ps">${c.s}</div>
-    </div>`).join('');
+  if(S.t1) {
+    const t1 = calcTier(v('t1-ip'), v('t1-virt'), S.t1r, v('t1-members'), v('mf1'));
+    renderBreakdown(document.getElementById('t1-breakdown'), t1);
+  }
+  if(S.t2) {
+    const t2 = calcTier(v('t2-ip'), v('t2-virt'), S.t2r, v('t2-members'), v('mf2'));
+    renderBreakdown(document.getElementById('t2-breakdown'), t2);
+  }
 }
 
 function switchTab(t) {
@@ -360,12 +396,16 @@ function switchTab(t) {
 }
 
 function getCfg() {
+  const t1 = calcTier(v('t1-ip'), v('t1-virt'), S.t1r, v('t1-members'), v('mf1'));
+  const t2 = calcTier(v('t2-ip'), v('t2-virt'), S.t2r, v('t2-members'), v('mf2'));
   return {
     sponsor:g('sponsor'), contact:g('contact'), contactTitle:g('ctitle'),
     group:g('group'), qdate:g('qdate')||new Date().toISOString().slice(0,10),
-    members:v('members'), inperson:v('inperson'), virtual:v('virtual'),
-    showT1:S.t1, showT2:S.t2, showMA:S.ma, showMB:S.mb,
-    sf1:v('sf1'), mf1:v('mf1'), sf2:v('sf2'), mf2:v('mf2'), bt1:v('bt1'), bt2:v('bt2'),
+    members:v('t2-members'), inperson:v('t2-ip'), virtual:v('t2-virt'),
+    showT1:S.t1, showT2:S.t2, showMA:true, showMB:false,
+    t1, t2,
+    sf1:t1.sponsorFee, mf1:v('mf1'), sf2:t2.sponsorFee, mf2:v('mf2'),
+    bt1:t1.total, bt2:t2.total,
     notes:g('notes'), emailnotes:g('emailnotes')
   };
 }
@@ -383,7 +423,7 @@ async function claude(prompt) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     })
@@ -409,14 +449,12 @@ async function genProposal() {
   switchTab('proposal');
 
   const tiers = [];
-  if(c.showT1&&c.showMA) tiers.push(`Tier 1 Model A: sponsor ${fmt(c.sf1)}, member ${fmt(c.mf1)}/seat`);
-  if(c.showT2&&c.showMA) tiers.push(`Tier 2 Model A: sponsor ${fmt(c.sf2)}, member ${fmt(c.mf2)}/seat`);
-  if(c.showT1&&c.showMB) tiers.push(`Tier 1 Model B (sponsor pays all): ${fmt(c.bt1)}`);
-  if(c.showT2&&c.showMB) tiers.push(`Tier 2 Model B (sponsor pays all): ${fmt(c.bt2)}`);
+  if(c.showT1) tiers.push(`Tier 1: sponsor fee ${fmt(c.t1.sponsorFee)}, member seat ${fmt(c.t1.mf)}, total ${fmt(c.t1.total)}`);
+  if(c.showT2) tiers.push(`Tier 2 annual: sponsor fee ${fmt(c.t2.sponsorFee)}, member seat ${fmt(c.t2.mf)}, total ${fmt(c.t2.total)}`);
 
   const prompt = `You are writing body copy for a NeuGroup PE sponsor proposal. NeuGroup's voice: clear, human, grounded, not salesy.
 
-Sponsor: ${c.sponsor} | Group: ${c.group} | Members: ~${c.members} | Format: ${c.inperson} in-person + ${c.virtual} virtual/yr
+Sponsor: ${c.sponsor} | Group: ${c.group} | Members: ~${c.t2.members} | Format: ${c.t2.ip} in-person + ${c.t2.virt} virtual/yr
 Pricing: ${tiers.join('; ')}
 ${c.notes ? 'Context: '+c.notes : ''}
 
@@ -562,7 +600,7 @@ async function downloadDocx() {
     });
 
     // Model A table
-    const t1ma = c.sf1+c.members*c.mf1, t2ma = c.sf2+c.members*c.mf2;
+    // pricing from getCfg t1/t2 objects
     function pricingTable(rows) {
       const cols=[]; if(c.showT1)cols.push('Tier 1: Single Meeting'); if(c.showT2)cols.push('Tier 2: Full Annual Program');
       const w=Math.floor(9360/(cols.length+1));
@@ -572,12 +610,10 @@ async function downloadDocx() {
       });
     }
 
-    const maRows=[[`${c.sponsor} (Sponsor)`,...[c.showT1&&fmt(c.sf1),c.showT2&&fmt(c.sf2)].filter(Boolean)],
-      ['Portfolio Co. members',...[c.showT1&&`${fmt(c.mf1)}/seat (~${fmt(c.members*c.mf1)})`,c.showT2&&`${fmt(c.mf2)}/seat (~${fmt(c.members*c.mf2)})`].filter(Boolean)],
-      ['Total program',...[c.showT1&&fmt(t1ma),c.showT2&&fmt(t2ma)].filter(Boolean)]];
-    const mbRows=[[`${c.sponsor} (Sponsor)`,...[c.showT1&&fmt(c.bt1),c.showT2&&fmt(c.bt2)].filter(Boolean)],
-      ['Portfolio Co. members',...[c.showT1&&'No charge',c.showT2&&'No charge'].filter(Boolean)],
-      ['Total program',...[c.showT1&&fmt(c.bt1),c.showT2&&fmt(c.bt2)].filter(Boolean)]];
+    const maRows=[[`${c.sponsor} (Sponsor)`,...[c.showT1&&fmt(c.t1.sponsorFee),c.showT2&&fmt(c.t2.sponsorFee)].filter(Boolean)],
+      ['Portfolio Co. members',...[c.showT1&&`${fmt(c.t1.mf)}/seat (~${fmt(c.t1.memberFees)})`,c.showT2&&`${fmt(c.t2.mf)}/seat (~${fmt(c.t2.memberFees)})`].filter(Boolean)],
+      ['Total program',...[c.showT1&&fmt(c.t1.total),c.showT2&&fmt(c.t2.total)].filter(Boolean)]];
+    const mbRows = maRows;
 
     const children = [
       new Paragraph({spacing:{before:0,after:80},children:[new TextRun({text:'NeuGroup',bold:true,size:36,color:NAVY})]}),
@@ -642,9 +678,8 @@ async function downloadDocx() {
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────────
-['members','sf1','mf1','sf2','mf2','bt1','bt2'].forEach(id =>
-  document.getElementById(id).addEventListener('input', updatePricing));
 updatePricing();
 </script>
 </body>
 </html>
+
