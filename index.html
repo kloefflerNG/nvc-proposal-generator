@@ -665,6 +665,7 @@ async function downloadDocx() {
     }
 
     const maRows=[[`${c.sponsor} (Sponsor)`,...[c.showT1&&fmt(c.t1.sponsorFee),c.showT2&&fmt(c.t2.sponsorFee)].filter(Boolean)],
+      ['Research project',...[c.showT1&&(c.t1.research?fmt(20000):'—'),c.showT2&&(c.t2.research?fmt(20000):'—')].filter(Boolean)],
       ['Portfolio Co. members',...[c.showT1&&`${fmt(c.t1.mf)}/seat (~${fmt(c.t1.memberFees)})`,c.showT2&&`${fmt(c.t2.mf)}/seat (~${fmt(c.t2.memberFees)})`].filter(Boolean)],
       ['Total program',...[c.showT1&&fmt(c.t1.total),c.showT2&&fmt(c.t2.total)].filter(Boolean)]];
     const mbRows = maRows;
@@ -686,8 +687,8 @@ async function downloadDocx() {
       new Paragraph({spacing:{before:200,after:200},children:[new TextRun({text:''})]}),
       new Paragraph({heading:HeadingLevel.HEADING_1,children:[new TextRun({text:'Two Pricing Models',bold:true,color:NAVY})]}),
       para(`We offer two ways to fund the program. ${c.sponsor} picks the one that fits — both deliver the same content and experience.`),
-      ...(c.showMA?[new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'Model A — Sponsor + Member Fees',bold:true})]}),pricingTable(maRows),new Paragraph({spacing:{before:160,after:160},children:[new TextRun({text:''})]})]: []),
-      ...(c.showMB?[new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'Model B — Sponsor-Pays-All',bold:true})]}),pricingTable(mbRows),new Paragraph({spacing:{before:160,after:160},children:[new TextRun({text:''})]})]: []),
+      ...(c.showMA?[new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'Pricing',bold:true})]}),pricingTable(maRows),new Paragraph({spacing:{before:160,after:160},children:[new TextRun({text:''})]})]: []),
+
       new Paragraph({heading:HeadingLevel.HEADING_1,children:[new TextRun({text:"What's Included",bold:true,color:NAVY})]}),
       bullet('A dedicated NeuGroup Facilitator with deep functional expertise'),
       bullet('Individual priorities calls with each member ahead of the meeting'),
