@@ -273,12 +273,10 @@
       <div class="actions">
         <button class="btn" id="btn-prop" onclick="genProposal()">Generate proposal ↗</button>
         <button class="btn" id="btn-email" onclick="genEmail()">Generate email ↗</button>
-        <button class="btn primary" id="btn-box" onclick="saveToBox()" disabled>Save all to Box</button>
+        <button class="btn primary" id="btn-docx" onclick="downloadDocx()" disabled>Download .docx</button>
       </div>
-
-      <div id="dl-area" style="margin-top:.75rem;display:none">
-        <p class="hint" style="margin-bottom:6px">Files ready — saved to Box and available below:</p>
-        <div id="dl-links"></div>
+      <div style="margin-top:8px">
+        <button class="btn success-btn" id="btn-dl-email" onclick="downloadEmail()" disabled style="width:100%">Download email (.txt)</button>
       </div>
 
       <div class="status" id="status"></div>
@@ -384,7 +382,7 @@ async function claude(prompt) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     })
@@ -472,79 +470,169 @@ Subject: [subject line]
 
 function checkReady() {
   const ready = generatedProposal && generatedEmail;
-  document.getElementById('btn-box').disabled = !ready;
+  document.getElementById('btn-docx').disabled = !ready;
+  document.getElementById('btn-dl-email').disabled = !ready;
 }
 
 // ── Save to Box ─────────────────────────────────────────────────────────────
-async function saveToBox() {
+function downloadEmail() {
   const c = getCfg();
-  const btn = document.getElementById('btn-box');
+  const blob = new Blob([generatedEmail], {type: 'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${c.sponsor.replace(/\s+/g,'_')}_${c.group}_Email_${c.qdate}.txt`;
+  a.click();
+}
+
+async function downloadDocx() {
+  const c = getCfg();
+  const btn = document.getElementById('btn-docx');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> Saving to Box...';
-  showStatus('<span class="spin"></span> Saving proposal, email, and pricing summary to Box...', 'info');
-
-  const folderPath = `NeuGroup/NVC Proposals/${c.sponsor}`;
-  const dateStamp = c.qdate;
-
-  const pricingSummary = `PRICING SUMMARY — ${c.sponsor} ${c.group} Group
-Generated: ${dateStamp} | Members: ${c.members}
-
-MODEL A — SPONSOR + MEMBER FEES
-Tier 1: Sponsor ${fmt(c.sf1)} + Member ${fmt(c.mf1)}/seat = Total ${fmt(c.sf1 + c.members*c.mf1)}
-Tier 2: Sponsor ${fmt(c.sf2)} + Member ${fmt(c.mf2)}/seat = Total ${fmt(c.sf2 + c.members*c.mf2)}
-
-MODEL B — SPONSOR PAYS ALL
-Tier 1: ${fmt(c.bt1)}
-Tier 2: ${fmt(c.bt2)}
-
-UPGRADE CREDIT
-Model A: ${fmt(c.mf1)}/member credited toward Tier 2 annual fee if upgrade signed within 6 months
-Model B: $20,000 credited toward Tier 2 if upgrade signed within 6 months
-
-UPGRADE YEAR-1 EFFECTIVE PRICES
-Model A: ${fmt((c.sf2 + c.members*c.mf2) - c.members*c.mf1)}
-Model B: ${fmt(c.bt2 - 20000)}`;
-
-  const prompt = `You have access to Box. Save these three files to the folder path "${folderPath}" (create the folder hierarchy if it doesn't exist):
-
-FILE 1 — filename: "${c.sponsor.replace(/\s+/g,'_')}_${c.group}_Proposal_${dateStamp}.txt"
-Content:
-${generatedProposal}
-
-FILE 2 — filename: "${c.sponsor.replace(/\s+/g,'_')}_${c.group}_Email_${dateStamp}.txt"
-Content:
-${generatedEmail}
-
-FILE 3 — filename: "${c.sponsor.replace(/\s+/g,'_')}_${c.group}_Pricing_${dateStamp}.txt"
-Content:
-${pricingSummary}
-
-After saving all three files, respond with a JSON object like:
-{"saved": true, "files": [{"name": "...", "id": "..."}, ...]}`;
+  btn.innerHTML = '<span class="spin"></span> Building .docx...';
 
   try {
-    const r = await fetch('/.netlify/functions/claude', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }],
-        mcp_servers: [{ type: 'url', url: 'https://mcp.box.com', name: 'box-mcp' }]
-      })
-    });
-    const d = await r.json();
-    const text = d.content?.find(b=>b.type==='text')?.text || JSON.stringify(d.content||d);
-    const ok = text.toLowerCase().includes('saved') || text.toLowerCase().includes('"saved":true') || text.includes('"id"');
-    showStatus(ok
-      ? `✓ All three files saved to Box — <strong>${folderPath}</strong>`
-      : `Box response: ${text.slice(0, 300)}`, ok ? 'ok' : 'info');
-  } catch(e) {
-    showStatus('Box error: ' + e.message, 'err');
-  }
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+            AlignmentType, HeadingLevel, BorderStyle, WidthType, ShadingType,
+            VerticalAlign, LevelFormat } = docx;
 
+    const NAVY = '1F3864', LBLUE = 'D9E2F3', WHITE = 'FFFFFF', GRAY = 'F2F2F2', ACCENT = '2E5FA3';
+    const border = { style: BorderStyle.SINGLE, size: 4, color: 'CCCCCC' };
+    const borders = { top: border, bottom: border, left: border, right: border };
+
+    function cell(text, {bold=false,fill=WHITE,color='000000',width=3120,italic=false}={}) {
+      return new TableCell({ borders, width:{size:width,type:WidthType.DXA},
+        shading:{fill,type:ShadingType.CLEAR}, margins:{top:80,bottom:80,left:160,right:160},
+        verticalAlign:VerticalAlign.CENTER,
+        children:[new Paragraph({children:[new TextRun({text,bold,color,italics:italic,size:20})]})]
+      });
+    }
+    function hdrCell(text,w=3120){return cell(text,{bold:true,fill:NAVY,color:WHITE,width:w});}
+    function subCell(text,w=3120){return cell(text,{bold:true,fill:LBLUE,color:NAVY,width:w});}
+    function fmtCell(text,w=3120,alt=false){return cell(text,{fill:alt?GRAY:WHITE,width:w});}
+
+    function para(text,opts={}){
+      return new Paragraph({spacing:{before:80,after:120},children:[new TextRun({text,...opts})]});
+    }
+    function bullet(text){
+      return new Paragraph({numbering:{reference:'bullets',level:0},spacing:{before:60,after:60},
+        children:[new TextRun({text})]});
+    }
+
+    // Body paragraphs from AI
+    const bodyParas = generatedProposal.split('\n\n').filter(Boolean).map(p => {
+      const t = p.trim();
+      if(t === t.toUpperCase() && t.length < 60 && !t.includes('.')) {
+        return new Paragraph({heading:HeadingLevel.HEADING_2,
+          spacing:{before:200,after:120},children:[new TextRun({text:t,bold:true})]});
+      }
+      return para(t);
+    });
+
+    // Tiers table
+    const tierCols = [];
+    if(c.showT1) tierCols.push('Tier 1: Single Meeting');
+    if(c.showT2) tierCols.push('Tier 2: Full Annual Program');
+    const cw = Math.floor(9360/(tierCols.length+1));
+    const tierRows = [
+      ['Format',
+        c.showT1?`One in-person meeting at ${c.sponsor} offices, with elevated evening dinner`:null,
+        c.showT2?`${c.inperson} in-person meetings + ${c.virtual} virtual sessions, with elevated evening dinners`:null],
+      ['Approx. attendees',
+        c.showT1?`~${c.members} ${c.group}s from ${c.sponsor} portfolio companies`:null,
+        c.showT2?`~${c.members} ${c.group}s from ${c.sponsor} portfolio companies`:null],
+      ['Research project', c.showT1?'Not included':null, c.showT2?'One research project with member input, pre-meeting poll, and in-session polls':null],
+      ['NeuGroup Community', c.showT1?'Access through meeting only':null, c.showT2?'Full year of access — Q&A, peer support, ongoing exchange':null],
+      ['Best for', c.showT1?'Testing the model with a single signature event':null, c.showT2?'Building durable peer relationships and benchmarking across the year':null],
+    ];
+
+    const tiersTable = new Table({
+      width:{size:9360,type:WidthType.DXA}, columnWidths:Array(tierCols.length+1).fill(cw),
+      rows:[
+        new TableRow({children:[cell('',{fill:NAVY,width:cw}), ...tierCols.map(t=>hdrCell(t,cw))]}),
+        ...tierRows.map((row,i)=>new TableRow({children:[
+          subCell(row[0],cw),
+          ...row.slice(1).filter(v=>v!==null).map(v=>fmtCell(v,cw,i%2===0))
+        ]}))
+      ]
+    });
+
+    // Model A table
+    const t1ma = c.sf1+c.members*c.mf1, t2ma = c.sf2+c.members*c.mf2;
+    function pricingTable(rows) {
+      const cols=[]; if(c.showT1)cols.push('Tier 1: Single Meeting'); if(c.showT2)cols.push('Tier 2: Full Annual Program');
+      const w=Math.floor(9360/(cols.length+1));
+      return new Table({width:{size:9360,type:WidthType.DXA},columnWidths:Array(cols.length+1).fill(w),
+        rows:[new TableRow({children:[cell('',{fill:NAVY,width:w}),...cols.map(t=>hdrCell(t,w))]}),
+          ...rows.map((row,i)=>new TableRow({children:[subCell(row[0],w),...row.slice(1).map(v=>fmtCell(v,w,i%2===0))]}))]
+      });
+    }
+
+    const maRows=[[`${c.sponsor} (Sponsor)`,...[c.showT1&&fmt(c.sf1),c.showT2&&fmt(c.sf2)].filter(Boolean)],
+      ['Portfolio Co. members',...[c.showT1&&`${fmt(c.mf1)}/seat (~${fmt(c.members*c.mf1)})`,c.showT2&&`${fmt(c.mf2)}/seat (~${fmt(c.members*c.mf2)})`].filter(Boolean)],
+      ['Total program',...[c.showT1&&fmt(t1ma),c.showT2&&fmt(t2ma)].filter(Boolean)]];
+    const mbRows=[[`${c.sponsor} (Sponsor)`,...[c.showT1&&fmt(c.bt1),c.showT2&&fmt(c.bt2)].filter(Boolean)],
+      ['Portfolio Co. members',...[c.showT1&&'No charge',c.showT2&&'No charge'].filter(Boolean)],
+      ['Total program',...[c.showT1&&fmt(c.bt1),c.showT2&&fmt(c.bt2)].filter(Boolean)]];
+
+    const children = [
+      new Paragraph({spacing:{before:0,after:80},children:[new TextRun({text:'NeuGroup',bold:true,size:36,color:NAVY})]}),
+      new Paragraph({spacing:{before:0,after:320},children:[new TextRun({text:'Connect. Exchange. Distill.',italics:true,size:22,color:'666666'})]}),
+      new Paragraph({heading:HeadingLevel.HEADING_1,spacing:{before:0,after:160},
+        children:[new TextRun({text:`Proposal: ${c.group} Peer Group for ${c.sponsor}`,bold:true,color:NAVY})]}),
+      new Paragraph({spacing:{before:0,after:480},children:[
+        new TextRun({text:'Prepared for ',size:22}),new TextRun({text:c.sponsor,bold:true,size:22}),
+        new TextRun({text:'  |  Prepared by ',size:22}),new TextRun({text:'NeuGroup, Inc.',bold:true,size:22})]}),
+      new Paragraph({heading:HeadingLevel.HEADING_1,children:[new TextRun({text:'Overview',bold:true,color:NAVY})]}),
+      para(`NeuGroup convenes peer groups of senior functional leaders from private equity portfolio companies — bringing together ${c.group}s, Treasurers, CIOs, FP&A leaders, and others to share knowledge, benchmark practices, and accelerate value creation.`),
+      para(`This proposal outlines pricing for a ${c.group} peer group drawn from ${c.sponsor}'s portfolio companies.`),
+      ...bodyParas,
+      new Paragraph({heading:HeadingLevel.HEADING_1,spacing:{before:280,after:160},children:[new TextRun({text:'Program Tiers',bold:true,color:NAVY})]}),
+      tiersTable,
+      new Paragraph({spacing:{before:200,after:200},children:[new TextRun({text:''})]}),
+      new Paragraph({heading:HeadingLevel.HEADING_1,children:[new TextRun({text:'Two Pricing Models',bold:true,color:NAVY})]}),
+      para(`We offer two ways to fund the program. ${c.sponsor} picks the one that fits — both deliver the same content and experience.`),
+      ...(c.showMA?[new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'Model A — Sponsor + Member Fees',bold:true})]}),pricingTable(maRows),new Paragraph({spacing:{before:160,after:160},children:[new TextRun({text:''})]})]: []),
+      ...(c.showMB?[new Paragraph({heading:HeadingLevel.HEADING_2,children:[new TextRun({text:'Model B — Sponsor-Pays-All',bold:true})]}),pricingTable(mbRows),new Paragraph({spacing:{before:160,after:160},children:[new TextRun({text:''})]})]: []),
+      new Paragraph({heading:HeadingLevel.HEADING_1,children:[new TextRun({text:"What's Included",bold:true,color:NAVY})]}),
+      bullet('A dedicated NeuGroup Facilitator with deep functional expertise'),
+      bullet('Individual priorities calls with each member ahead of the meeting'),
+      bullet('Agenda design with input from '+c.sponsor+' and the members themselves'),
+      bullet('An elevated evening dinner with up to six '+c.sponsor+' representatives'),
+      bullet('At least one closed-door session without the sponsor present'),
+      bullet('A post-meeting brief with key takeaways for members'),
+      bullet('A summary-level recap of closed-door content for '+c.sponsor),
+      new Paragraph({spacing:{before:200},children:[new TextRun({text:''})]}),
+      new Paragraph({heading:HeadingLevel.HEADING_1,children:[new TextRun({text:'Next Steps',bold:true,color:NAVY})]}),
+      para(`Happy to walk through this in detail. Once ${c.sponsor} has selected a tier and pricing model, we'll move to a formal engagement letter. Typical timeline from signed agreement to first meeting is 8–12 weeks.`),
+      new Paragraph({spacing:{before:160},children:[new TextRun({text:'Pricing valid for 60 days from the date of this proposal.',italics:true,size:20})]})
+    ];
+
+    const doc = new Document({
+      numbering:{config:[{reference:'bullets',levels:[{level:0,format:LevelFormat.BULLET,text:'•',alignment:AlignmentType.LEFT,style:{paragraph:{indent:{left:720,hanging:360}}}}]}]},
+      styles:{
+        default:{document:{run:{font:'Calibri',size:22}}},
+        paragraphStyles:[
+          {id:'Heading1',name:'Heading 1',basedOn:'Normal',next:'Normal',quickFormat:true,
+            run:{size:30,bold:true,font:'Calibri',color:NAVY},paragraph:{spacing:{before:280,after:160},outlineLevel:0}},
+          {id:'Heading2',name:'Heading 2',basedOn:'Normal',next:'Normal',quickFormat:true,
+            run:{size:26,bold:true,font:'Calibri',color:ACCENT},paragraph:{spacing:{before:200,after:120},outlineLevel:1}},
+        ]
+      },
+      sections:[{properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1440,bottom:1440,left:1440}}},children}]
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${c.sponsor.replace(/\s+/g,'_')}_${c.group}_Proposal_${c.qdate}.docx`;
+    a.click();
+    showStatus('✓ Proposal downloaded successfully', 'ok');
+  } catch(e) {
+    showStatus('Error generating .docx: ' + e.message, 'err');
+    console.error(e);
+  }
   btn.disabled = false;
-  btn.textContent = 'Save all to Box';
+  btn.textContent = 'Download .docx';
   checkReady();
 }
 
@@ -553,5 +641,6 @@ After saving all three files, respond with a JSON object like:
   document.getElementById(id).addEventListener('input', updatePricing));
 updatePricing();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
 </body>
 </html>
