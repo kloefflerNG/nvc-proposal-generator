@@ -48,7 +48,7 @@
   .topbar-right { font-size: 12px; opacity: .6; cursor: pointer; }
   .topbar-right:hover { opacity: 1; }
 
-  .main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  /* main replaced by page-layout */
   .page-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: .25rem; }
   .page-sub { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
 
@@ -123,6 +123,20 @@
   .hint { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
 
   footer { text-align: center; padding: 1.5rem; font-size: 11px; color: var(--muted); }
+
+  /* ── Sidebar layout ── */
+  .page-layout { display: flex; gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  .sidebar { width: 240px; min-width: 240px; position: sticky; top: 72px; align-self: flex-start; }
+  .sidebar-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+  .sidebar-title { font-size: 12px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 2px solid var(--navy); }
+  .sidebar-step { margin-bottom: 1rem; }
+  .sidebar-step-label { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .sidebar-step-num { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .sidebar-step p { font-size: 12px; color: var(--muted); line-height: 1.55; padding-left: 25px; }
+  .sidebar-divider { height: 1px; background: var(--border); margin: .75rem 0; }
+  .sidebar-note { background: #EFF6FF; border-radius: var(--radius-sm); padding: .7rem; font-size: 11px; color: #1E40AF; line-height: 1.55; margin-top: .75rem; }
+  .main-content { flex: 1; min-width: 0; }
+  @media(max-width:900px){ .page-layout{ flex-direction: column; } .sidebar{ width:100%; min-width:0; position:static; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
 </head>
@@ -151,9 +165,47 @@
     <div class="topbar-right" onclick="logout()">Sign out</div>
   </div>
 
-  <div class="main">
+  <div class="page-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">How to use this tool</div>
+        <p style="font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:1rem;">This generator creates a customized NeuGroup proposal and outreach email for any PE sponsor. Follow the five steps in order.</p>
+
+        <div class="sidebar-step">
+          <div class="sidebar-step-label"><span class="sidebar-step-num">1</span> Sponsor details</div>
+          <p>Enter the firm name, your contact, their title and email, the functional group you're proposing, and today's date.</p>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-step">
+          <div class="sidebar-step-label"><span class="sidebar-step-num">2</span> Tier 1 — Single meeting</div>
+          <p>Set member count, meeting format (in-person or virtual), and whether to include a research project. Price builds automatically.</p>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-step">
+          <div class="sidebar-step-label"><span class="sidebar-step-num">3</span> Tier 2 — Annual program</div>
+          <p>Set members, number of in-person and virtual sessions per year, and research. Toggle off either tier to present only one option.</p>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-step">
+          <div class="sidebar-step-label"><span class="sidebar-step-num">4</span> Additional context</div>
+          <p>Add sponsor background — how you know them, their priorities, timing. Add tone notes for the email (e.g. "keep it short, we met at a conference").</p>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-step">
+          <div class="sidebar-step-label"><span class="sidebar-step-num">5</span> Generate &amp; export</div>
+          <p>Click Generate proposal, then Generate email. Review both previews. Click <strong>Download .docx</strong> for the formatted proposal and <strong>Download email</strong> for the outreach copy.</p>
+        </div>
+        <div class="sidebar-note">
+          💡 <strong>Billing note:</strong> The proposal includes a callout that billing is flexible — sponsors can recharge fees to portcos or NeuGroup can invoice directly.
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
     <div class="page-title">New Proposal</div>
-    <div class="page-sub">Fill in the fields below, generate the AI-written sections, then save everything to Box.</div>
+    <div class="page-sub">Fill in the fields below, generate the AI-written sections, then download.</div>
 
     <!-- Step 1: Sponsor Details -->
     <div class="card">
@@ -294,6 +346,8 @@
     </div>
 
   </div>
+    </div><!-- end main-content -->
+  </div><!-- end page-layout -->
   <footer>NeuGroup NVC · Internal tool · <span id="yr"></span></footer>
 </div>
 
@@ -423,7 +477,7 @@ async function claude(prompt) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     })
@@ -682,4 +736,3 @@ updatePricing();
 </script>
 </body>
 </html>
-
