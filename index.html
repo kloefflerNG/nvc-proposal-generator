@@ -208,7 +208,7 @@
     <div class="page-sub">Select a proposal type, fill in the fields, then generate and download.</div>
 
     <!-- Product selector -->
-    <div class="card" style="margin-bottom:1rem">
+    <div class="card" style="margin-bottom:1rem;scroll-margin-top:80px">
       <div class="card-title">Proposal type</div>
       <div class="toggles">
         <div class="tb on" id="prod-nvc" onclick="switchProduct('nvc')">NVC Peer Group</div>
@@ -396,8 +396,6 @@
                 <select class="sss-format">
                   <option value="Virtual, 60 minutes, facilitated by NeuGroup">Virtual (60 min)</option>
                   <option value="Virtual, 90 minutes, facilitated by NeuGroup">Virtual (90 min)</option>
-                  <option value="In-person, half-day session facilitated by NeuGroup">In-person (half-day)</option>
-                  <option value="In-person, full-day session facilitated by NeuGroup">In-person (full-day)</option>
                 </select>
               </div>
             </div>
@@ -406,6 +404,8 @@
               <div class="field"><label>Price ($)</label><input class="sss-price" type="number" value="20000" oninput="updateSSSPricing()"/></div>
             </div>
             <div class="field" style="margin-bottom:8px"><label>Content focus (what the sponsor brings)</label><input class="sss-content" placeholder="e.g. Perspective on modeling, planning, or supply chain analytics"/></div>
+            <div class="field" style="margin-bottom:8px"><label>You receive (editable)</label><textarea class="sss-receive" rows="2" style="font-size:12px">Sponsorship credit and co-branding; post-event member introductions; optional one survey question to the group</textarea></div>
+            <div class="field" style="margin-bottom:8px"><label>Timing (editable)</label><input class="sss-timing" value="Scheduled upon agreement; dates TBD based on group calendar"/></div>
           </div>
         </div>
         <button class="btn" style="margin-top:.5rem;font-size:12px" onclick="addSSSSession()">+ Add another session</button>
@@ -886,6 +886,7 @@ function switchProduct(p) {
   document.getElementById('form-sss').style.display = p==='sss'?'block':'none';
   document.getElementById('prod-nvc').classList.toggle('on', p==='nvc');
   document.getElementById('prod-sss').classList.toggle('on', p==='sss');
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 // ── SSS helpers ───────────────────────────────────────────────────────────────
@@ -899,6 +900,8 @@ function getSSSSessions() {
       format: el.querySelector('.sss-format').value,
       audience: el.querySelector('.sss-audience').value,
       content: el.querySelector('.sss-content').value,
+      receive: el.querySelector('.sss-receive') ? el.querySelector('.sss-receive').value : 'Sponsorship credit and co-branding; post-event member introductions; optional one survey question to the group',
+      timing: el.querySelector('.sss-timing') ? el.querySelector('.sss-timing').value : 'Scheduled upon agreement; dates TBD based on group calendar',
       price: parseFloat(el.querySelector('.sss-price').value) || 20000
     });
   });
@@ -933,8 +936,6 @@ function addSSSSession() {
         <select class="sss-format">
           <option value="Virtual, 60 minutes, facilitated by NeuGroup">Virtual (60 min)</option>
           <option value="Virtual, 90 minutes, facilitated by NeuGroup">Virtual (90 min)</option>
-          <option value="In-person, half-day session facilitated by NeuGroup">In-person (half-day)</option>
-          <option value="In-person, full-day session facilitated by NeuGroup">In-person (full-day)</option>
         </select>
       </div>
     </div>
@@ -942,7 +943,9 @@ function addSSSSession() {
       <div class="field"><label>Audience</label><input class="sss-audience" placeholder="e.g. Senior treasury leaders"/></div>
       <div class="field"><label>Price ($)</label><input class="sss-price" type="number" value="20000" oninput="updateSSSPricing()"/></div>
     </div>
-    <div class="field" style="margin-bottom:8px"><label>Content focus</label><input class="sss-content" placeholder="e.g. Perspective on treasury technology"/></div>`;
+    <div class="field" style="margin-bottom:8px"><label>Content focus</label><input class="sss-content" placeholder="e.g. Perspective on treasury technology"/></div>
+    <div class="field" style="margin-bottom:8px"><label>You receive (editable)</label><textarea class="sss-receive" rows="2" style="font-size:12px">Sponsorship credit and co-branding; post-event member introductions; optional one survey question to the group</textarea></div>
+    <div class="field" style="margin-bottom:8px"><label>Timing (editable)</label><input class="sss-timing" value="Scheduled upon agreement; dates TBD based on group calendar"/></div>`;
   container.appendChild(div);
   updateSSSPricing();
 }
@@ -1166,8 +1169,8 @@ async function downloadSSSDocx() {
             new TableRow({children:[blueCell('Format',2000),cell(s.format,{width:7360})]}),
             new TableRow({children:[blueCell('Audience',2000),cell(s.audience,{width:7360,fill:GRAY})]}),
             new TableRow({children:[blueCell('Content',2000),cell(s.content||'Member-driven agenda; sponsor brings defined perspective; NeuGroup sets the frame and facilitates',{width:7360})]}),
-            new TableRow({children:[blueCell('You receive',2000),cell('Sponsorship credit and co-branding; post-event member introductions; optional one survey question to the group',{width:7360,fill:GRAY})]}),
-            new TableRow({children:[blueCell('Timing',2000),cell('Scheduled upon agreement; dates TBD based on group calendar',{width:7360})]}),
+            new TableRow({children:[blueCell('You receive',2000),cell(s.receive||'Sponsorship credit and co-branding; post-event member introductions; optional one survey question to the group',{width:7360,fill:GRAY})]}),
+            new TableRow({children:[blueCell('Timing',2000),cell(s.timing||'Scheduled upon agreement; dates TBD based on group calendar',{width:7360})]}),
             new TableRow({children:[blueCell('Investment',2000),cell(`${fmt(s.price)} — includes session production, NeuGroup facilitation, and post-event member introductions`,{width:7360,fill:GRAY})]})
           ]
         }),
@@ -1257,6 +1260,7 @@ updateSSSPricing();
 </script>
 </body>
 </html>
+
 
 
 
