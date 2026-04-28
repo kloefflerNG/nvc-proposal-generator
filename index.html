@@ -205,7 +205,19 @@
     <!-- Main content -->
     <div class="main-content">
     <div class="page-title">New Proposal</div>
-    <div class="page-sub">Fill in the fields below, generate the AI-written sections, then download.</div>
+    <div class="page-sub">Select a proposal type, fill in the fields, then generate and download.</div>
+
+    <!-- Product selector -->
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-title">Proposal type</div>
+      <div class="toggles">
+        <div class="tb on" id="prod-nvc" onclick="switchProduct('nvc')">NVC Peer Group</div>
+        <div class="tb" id="prod-sss" onclick="switchProduct('sss')">Sponsored Solution Session</div>
+      </div>
+    </div>
+
+    <!-- NVC form -->
+    <div id="form-nvc">
 
     <!-- Step 1: Sponsor Details -->
     <div class="card">
@@ -346,6 +358,103 @@
     </div>
 
   </div>
+    </div><!-- end form-nvc -->
+
+    <!-- SSS form -->
+    <div id="form-sss" style="display:none">
+
+      <!-- SSS Step 1: Sponsor details -->
+      <div class="card">
+        <div class="section-header"><span class="step-badge">1</span><span class="section-header-title">Sponsor details</span></div>
+        <div class="row2">
+          <div class="field"><label>Sponsor / company name</label><input id="sss-sponsor" value=""/></div>
+          <div class="field"><label>Contact name</label><input id="sss-contact" placeholder="e.g. Andy Podolsky"/></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Contact email</label><input id="sss-email" type="email" placeholder="andy@company.com"/></div>
+          <div class="field"><label>Contact title</label><input id="sss-title" placeholder="e.g. VP of Marketing"/></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>NeuGroup rep name</label><input id="sss-rep" placeholder="e.g. Andy Podolsky"/></div>
+          <div class="field"><label>NeuGroup rep email</label><input id="sss-rep-email" placeholder="apodolsky@neugroup.com"/></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Quote date</label><input id="sss-date" type="date"/></div>
+          <div class="field"><label>Month / period</label><input id="sss-period" placeholder="e.g. April 2026"/></div>
+        </div>
+      </div>
+
+      <!-- SSS Step 2: Session config -->
+      <div class="card">
+        <div class="section-header"><span class="step-badge">2</span><span class="section-header-title">Session configuration</span></div>
+        <div id="sss-sessions-container">
+          <div class="sss-session" id="sss-session-1">
+            <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px">Session 1</div>
+            <div class="row2">
+              <div class="field"><label>Session name / peer group</label><input class="sss-sname" placeholder="e.g. H&F FP&A Sponsored Solution Session"/></div>
+              <div class="field"><label>Format</label>
+                <select class="sss-format">
+                  <option value="Virtual, 60 minutes, facilitated by NeuGroup">Virtual (60 min)</option>
+                  <option value="Virtual, 90 minutes, facilitated by NeuGroup">Virtual (90 min)</option>
+                  <option value="In-person, half-day session facilitated by NeuGroup">In-person (half-day)</option>
+                  <option value="In-person, full-day session facilitated by NeuGroup">In-person (full-day)</option>
+                </select>
+              </div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Audience / peer group description</label><input class="sss-audience" placeholder="e.g. Senior FP&A leaders at large enterprises"/></div>
+              <div class="field"><label>Price ($)</label><input class="sss-price" type="number" value="20000" oninput="updateSSSPricing()"/></div>
+            </div>
+            <div class="field" style="margin-bottom:8px"><label>Content focus (what the sponsor brings)</label><input class="sss-content" placeholder="e.g. Perspective on modeling, planning, or supply chain analytics"/></div>
+          </div>
+        </div>
+        <button class="btn" style="margin-top:.5rem;font-size:12px" onclick="addSSSSession()">+ Add another session</button>
+        <div id="sss-pricing-summary" style="margin-top:1rem;background:var(--bg);border-radius:var(--radius-sm);padding:.9rem;font-size:13px;border:1px solid var(--border)"></div>
+      </div>
+
+      <!-- SSS Step 3: Context -->
+      <div class="card">
+        <div class="section-header"><span class="step-badge">3</span><span class="section-header-title">Additional context for AI</span></div>
+        <div class="row1">
+          <div class="field"><label>Sponsor background & why NeuGroup fits (shapes intro paragraph)</label>
+            <textarea id="sss-notes" placeholder="e.g. Anaplan and NeuGroup share a focus on FP&A practitioners navigating modeling platform decisions. They came to us through..."></textarea>
+          </div>
+        </div>
+        <div class="row1">
+          <div class="field"><label>Email tone & context</label>
+            <textarea id="sss-emailnotes" placeholder="e.g. Met Sarah at CFO event, she was warm. Keep it short and reference the attached proposal."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- SSS Step 4: Generate -->
+      <div class="card">
+        <div class="section-header"><span class="step-badge">4</span><span class="section-header-title">Generate & export</span></div>
+        <div class="tabs">
+          <div class="tab on" onclick="switchSSSTab('proposal')">Proposal preview</div>
+          <div class="tab" onclick="switchSSSTab('email')">Email preview</div>
+        </div>
+        <div class="tc on" id="sss-tc-proposal">
+          <p class="hint" style="margin-bottom:8px">AI-generated intro — embedded into the NeuGroup-branded SSS proposal .docx</p>
+          <div class="preview" id="sss-prev-proposal">Click "Generate proposal" below...</div>
+        </div>
+        <div class="tc" id="sss-tc-email">
+          <p class="hint" style="margin-bottom:8px">AI-generated outreach email</p>
+          <div class="preview" id="sss-prev-email">Click "Generate email" below...</div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="sss-btn-prop" onclick="genSSSProposal()">Generate proposal ↗</button>
+          <button class="btn" id="sss-btn-email" onclick="genSSSEmail()">Generate email ↗</button>
+          <button class="btn primary" id="sss-btn-docx" onclick="downloadSSSDocx()" disabled>Download .docx</button>
+        </div>
+        <div style="margin-top:8px">
+          <button class="btn success-btn" id="sss-btn-dl-email" onclick="downloadSSSEmail()" disabled style="width:100%">Download email (.txt)</button>
+        </div>
+        <div class="status" id="sss-status"></div>
+      </div>
+
+    </div><!-- end form-sss -->
+
     </div><!-- end main-content -->
   </div><!-- end page-layout -->
   <footer>NeuGroup NVC · Internal tool · <span id="yr"></span></footer>
@@ -769,10 +878,386 @@ async function downloadDocx() {
   checkReady();
 }
 
+// ── Product switcher ─────────────────────────────────────────────────────────
+let currentProduct = 'nvc';
+function switchProduct(p) {
+  currentProduct = p;
+  document.getElementById('form-nvc').style.display = p==='nvc'?'block':'none';
+  document.getElementById('form-sss').style.display = p==='sss'?'block':'none';
+  document.getElementById('prod-nvc').classList.toggle('on', p==='nvc');
+  document.getElementById('prod-sss').classList.toggle('on', p==='sss');
+}
+
+// ── SSS helpers ───────────────────────────────────────────────────────────────
+let sssProposal = '', sssEmail = '', sssSessionCount = 1;
+
+function getSSSSessions() {
+  const sessions = [];
+  document.querySelectorAll('.sss-session').forEach((el, i) => {
+    sessions.push({
+      name: el.querySelector('.sss-sname').value || `Session ${i+1}`,
+      format: el.querySelector('.sss-format').value,
+      audience: el.querySelector('.sss-audience').value,
+      content: el.querySelector('.sss-content').value,
+      price: parseFloat(el.querySelector('.sss-price').value) || 20000
+    });
+  });
+  return sessions;
+}
+
+function updateSSSPricing() {
+  const sessions = getSSSSessions();
+  const total = sessions.reduce((sum, s) => sum + s.price, 0);
+  const lines = sessions.map((s,i) => `${s.name||'Session '+(i+1)}: ${fmt(s.price)}`);
+  lines.push(`<strong style="color:var(--navy)">Total investment: ${fmt(total)}</strong>`);
+  document.getElementById('sss-pricing-summary').innerHTML = lines.join('<br>');
+}
+
+function addSSSSession() {
+  sssSessionCount++;
+  const container = document.getElementById('sss-sessions-container');
+  const div = document.createElement('div');
+  div.className = 'sss-session';
+  div.id = `sss-session-${sssSessionCount}`;
+  div.style.marginTop = '1rem';
+  div.style.paddingTop = '1rem';
+  div.style.borderTop = '1px solid var(--border)';
+  div.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:12px;font-weight:600;color:var(--navy)">Session ${sssSessionCount}</div>
+      <button class="btn" style="font-size:11px;padding:3px 10px" onclick="this.closest('.sss-session').remove();updateSSSPricing()">Remove</button>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Session name / peer group</label><input class="sss-sname" placeholder="e.g. Treasury SSS"/></div>
+      <div class="field"><label>Format</label>
+        <select class="sss-format">
+          <option value="Virtual, 60 minutes, facilitated by NeuGroup">Virtual (60 min)</option>
+          <option value="Virtual, 90 minutes, facilitated by NeuGroup">Virtual (90 min)</option>
+          <option value="In-person, half-day session facilitated by NeuGroup">In-person (half-day)</option>
+          <option value="In-person, full-day session facilitated by NeuGroup">In-person (full-day)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Audience</label><input class="sss-audience" placeholder="e.g. Senior treasury leaders"/></div>
+      <div class="field"><label>Price ($)</label><input class="sss-price" type="number" value="20000" oninput="updateSSSPricing()"/></div>
+    </div>
+    <div class="field" style="margin-bottom:8px"><label>Content focus</label><input class="sss-content" placeholder="e.g. Perspective on treasury technology"/></div>`;
+  container.appendChild(div);
+  updateSSSPricing();
+}
+
+function switchSSSTab(t) {
+  ['proposal','email'].forEach((x,i) => {
+    document.querySelectorAll('#form-sss .tab')[i].classList.toggle('on', x===t);
+    document.getElementById('sss-tc-'+x).classList.toggle('on', x===t);
+  });
+}
+
+function checkSSSReady() {
+  const ready = sssProposal && sssEmail;
+  document.getElementById('sss-btn-docx').disabled = !ready;
+  document.getElementById('sss-btn-dl-email').disabled = !ready;
+}
+
+function showSSSStatus(msg, type) {
+  const s = document.getElementById('sss-status');
+  s.className = 'status ' + type;
+  s.innerHTML = msg;
+}
+
+function getSSSCfg() {
+  return {
+    sponsor: document.getElementById('sss-sponsor').value || 'Sponsor',
+    contact: document.getElementById('sss-contact').value,
+    contactTitle: document.getElementById('sss-title').value,
+    email: document.getElementById('sss-email').value,
+    rep: document.getElementById('sss-rep').value || 'NeuGroup',
+    repEmail: document.getElementById('sss-rep-email').value,
+    period: document.getElementById('sss-period').value || new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'}),
+    qdate: document.getElementById('sss-date').value || new Date().toISOString().slice(0,10),
+    sessions: getSSSSessions(),
+    notes: document.getElementById('sss-notes').value,
+    emailnotes: document.getElementById('sss-emailnotes').value
+  };
+}
+
+async function genSSSProposal() {
+  const c = getSSSCfg();
+  const el = document.getElementById('sss-prev-proposal');
+  const btn = document.getElementById('sss-btn-prop');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Generating...';
+  el.classList.remove('has-content'); el.textContent = '';
+  switchSSSTab('proposal');
+
+  const sessionList = c.sessions.map((s,i) =>
+    `Option ${i+1}: "${s.name}" — ${s.format}, audience: ${s.audience}, content: ${s.content}, price: ${fmt(s.price)}`
+  ).join('\n');
+  const total = c.sessions.reduce((sum,s)=>sum+s.price,0);
+
+  const prompt = `You are writing an intro paragraph for a NeuGroup Sponsored Solution Session (SSS) proposal. NeuGroup's voice: clear, human, direct, not salesy.
+
+Sponsor: ${c.sponsor}
+Sessions: ${sessionList}
+Total investment: ${fmt(total)}
+${c.notes ? 'Context: '+c.notes : ''}
+
+Write 2 short paragraphs (120-160 words total):
+1. Why ${c.sponsor} and NeuGroup are a natural fit — what they share in terms of audience, focus, or goals. Be specific to ${c.sponsor}, not generic.
+2. One sentence introducing the session options: "The option${c.sessions.length>1?'s':''} below ${c.sessions.length>1?'range from...':'offer'}..." — frame it as purpose-built access, not a sales pitch.
+
+No headers, no bullets, plain prose only. Do not mention pricing.`;
+
+  try {
+    sssProposal = await claude(prompt);
+    el.textContent = sssProposal;
+    el.classList.add('has-content');
+    checkSSSReady();
+  } catch(e) {
+    el.textContent = 'Error: ' + e.message;
+    showSSSStatus('Failed: ' + e.message, 'err');
+  }
+  btn.disabled = false; btn.textContent = 'Regenerate proposal ↗';
+}
+
+async function genSSSEmail() {
+  const c = getSSSCfg();
+  const el = document.getElementById('sss-prev-email');
+  const btn = document.getElementById('sss-btn-email');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Generating...';
+  el.classList.remove('has-content'); el.textContent = '';
+  switchSSSTab('email');
+
+  const sessionSummary = c.sessions.map((s,i)=>`${s.name} (${fmt(s.price)})`).join(', ');
+
+  const prompt = `Write a short outreach email from ${c.rep} at NeuGroup to ${c.contact||'[Contact]'} at ${c.sponsor} about a Sponsored Solution Session proposal.
+
+Sessions: ${sessionSummary}
+${c.emailnotes ? 'Tone/context: '+c.emailnotes : ''}
+
+Format:
+Subject: [subject line]
+
+[email body — 120-160 words, warm and direct. Reference the attached proposal. End with a soft ask for a 20-minute call.]`;
+
+  try {
+    sssEmail = await claude(prompt);
+    el.textContent = sssEmail;
+    el.classList.add('has-content');
+    checkSSSReady();
+  } catch(e) {
+    el.textContent = 'Error: ' + e.message;
+    showSSSStatus('Failed: ' + e.message, 'err');
+  }
+  btn.disabled = false; btn.textContent = 'Regenerate email ↗';
+}
+
+function downloadSSSEmail() {
+  const c = getSSSCfg();
+  const blob = new Blob([sssEmail], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${c.sponsor.replace(/\s+/g,'_')}_SSS_Email_${c.qdate}.txt`;
+  a.click();
+}
+
+async function downloadSSSDocx() {
+  const c = getSSSCfg();
+  const btn = document.getElementById('sss-btn-docx');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Building .docx...';
+
+  try {
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+            AlignmentType, HeadingLevel, BorderStyle, WidthType, ShadingType,
+            VerticalAlign, LevelFormat, PageBreak } = docx;
+
+    const NAVY='1F3864', BLUE='2E5FA3', LBLUE='BDD7EE', WHITE='FFFFFF', GRAY='F2F2F2', DKBLUE='1F3864';
+    const b = {style:BorderStyle.SINGLE,size:4,color:'CCCCCC'};
+    const borders = {top:b,bottom:b,left:b,right:b};
+    const nob = {style:BorderStyle.NONE,size:0,color:'FFFFFF'};
+    const noBorders = {top:nob,bottom:nob,left:nob,right:nob};
+
+    function cell(text,{bold=false,fill=WHITE,color='000000',width=4680,italic=false,align=AlignmentType.LEFT}={}) {
+      return new TableCell({borders,width:{size:width,type:WidthType.DXA},
+        shading:{fill,type:ShadingType.CLEAR},margins:{top:100,bottom:100,left:160,right:160},
+        verticalAlign:VerticalAlign.CENTER,
+        children:[new Paragraph({alignment:align,children:[new TextRun({text,bold,color,italics:italic,size:20,font:'Calibri'})]})]});
+    }
+    function hdrCell(text,w=4680){return cell(text,{bold:true,fill:NAVY,color:WHITE,width:w});}
+    function blueCell(text,w=4680){return cell(text,{bold:true,fill:LBLUE,color:NAVY,width:w});}
+    function navyBanner(text,w=9360){
+      return new Table({width:{size:9360,type:WidthType.DXA},columnWidths:[9360],
+        rows:[new TableRow({children:[new TableCell({borders:noBorders,width:{size:9360,type:WidthType.DXA},
+          shading:{fill:NAVY,type:ShadingType.CLEAR},margins:{top:140,bottom:140,left:240,right:240},
+          children:[new Paragraph({children:[new TextRun({text,bold:true,size:24,color:WHITE,font:'Calibri'})]})]
+        })]})]
+      });
+    }
+
+    // Logo
+    const LOGO_B64 = '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';
+
+    const logoBytes = Uint8Array.from(atob(LOGO_B64), ch => ch.charCodeAt(0));
+
+    // Header table
+    const headerTable = new Table({
+      width:{size:9360,type:WidthType.DXA}, columnWidths:[6200,3160],
+      rows:[new TableRow({children:[
+        new TableCell({borders:noBorders,shading:{fill:NAVY,type:ShadingType.CLEAR},
+          margins:{top:240,bottom:240,left:300,right:200},
+          children:[
+            new Paragraph({spacing:{before:0,after:60},children:[new TextRun({text:`NeuGroup × ${c.sponsor}`,bold:true,size:36,color:WHITE,font:'Calibri'})]}),
+            new Paragraph({spacing:{before:0,after:60},children:[new TextRun({text:'Partnership Proposal',size:24,color:'BDD7EE',font:'Calibri'})]}),
+            new Paragraph({spacing:{before:0,after:0},children:[new TextRun({text:`NeuGroup  ·  ${c.period}`,size:20,color:'9DC3E6',font:'Calibri'})]}),
+          ]}),
+        new TableCell({borders:noBorders,shading:{fill:NAVY,type:ShadingType.CLEAR},
+          margins:{top:200,bottom:200,left:200,right:300},verticalAlign:VerticalAlign.CENTER,
+          children:[new Paragraph({alignment:AlignmentType.RIGHT,children:[
+            new docx.ImageRun({data:logoBytes,transformation:{width:160,height:60},type:'png'})
+          ]})]
+        })
+      ]})]
+    });
+
+    // Rep contact cell (top right of header)
+    // Why NeuGroup section
+    const whyTable = new Table({
+      width:{size:9360,type:WidthType.DXA}, columnWidths:[3120,3120,3120],
+      rows:[new TableRow({children:[
+        new TableCell({borders,width:{size:3120,type:WidthType.DXA},shading:{fill:'EBF2FA',type:ShadingType.CLEAR},
+          margins:{top:160,bottom:160,left:160,right:160},
+          children:[
+            new Paragraph({children:[new TextRun({text:'~30 Peer Groups',bold:true,color:BLUE,size:22,font:'Calibri'})]}),
+            new Paragraph({spacing:{before:60},children:[new TextRun({text:'Finance, treasury, FP&A, CAO, and PE-backed teams across the NeuGroup network',size:20,font:'Calibri'})]})
+          ]}),
+        new TableCell({borders,width:{size:3120,type:WidthType.DXA},shading:{fill:'EBF2FA',type:ShadingType.CLEAR},
+          margins:{top:160,bottom:160,left:160,right:160},
+          children:[
+            new Paragraph({children:[new TextRun({text:'32 Years in Business',bold:true,color:BLUE,size:22,font:'Calibri'})]}),
+            new Paragraph({spacing:{before:60},children:[new TextRun({text:'Trusted, independent, practitioner-first since 1994',size:20,font:'Calibri'})]})
+          ]}),
+        new TableCell({borders,width:{size:3120,type:WidthType.DXA},shading:{fill:'EBF2FA',type:ShadingType.CLEAR},
+          margins:{top:160,bottom:160,left:160,right:160},
+          children:[
+            new Paragraph({children:[new TextRun({text:'F500 Members',bold:true,color:BLUE,size:22,font:'Calibri'})]}),
+            new Paragraph({spacing:{before:60},children:[new TextRun({text:'The finance practitioners your sales team is already trying to reach',size:20,font:'Calibri'})]})
+          ]})
+      ]})]
+    });
+
+    // Session option tables
+    const sessionTables = [];
+    c.sessions.forEach((s,i) => {
+      sessionTables.push(
+        new Table({width:{size:9360,type:WidthType.DXA},columnWidths:[7360,2000],
+          rows:[new TableRow({children:[
+            new TableCell({borders:noBorders,shading:{fill:NAVY,type:ShadingType.CLEAR},
+              margins:{top:140,bottom:140,left:240,right:160},
+              children:[new Paragraph({children:[new TextRun({text:`Option ${i+1} — ${s.name}`,bold:true,size:22,color:WHITE,font:'Calibri'})]})]
+            }),
+            new TableCell({borders:noBorders,shading:{fill:NAVY,type:ShadingType.CLEAR},
+              margins:{top:140,bottom:140,left:160,right:240},
+              children:[new Paragraph({alignment:AlignmentType.RIGHT,children:[new TextRun({text:fmt(s.price),bold:true,size:22,color:WHITE,font:'Calibri'})]})]
+            })
+          ]})]
+        }),
+        new Table({width:{size:9360,type:WidthType.DXA},columnWidths:[2000,7360],
+          rows:[
+            new TableRow({children:[blueCell('Format',2000),cell(s.format,{width:7360})]}),
+            new TableRow({children:[blueCell('Audience',2000),cell(s.audience,{width:7360,fill:GRAY})]}),
+            new TableRow({children:[blueCell('Content',2000),cell(s.content||'Member-driven agenda; sponsor brings defined perspective; NeuGroup sets the frame and facilitates',{width:7360})]}),
+            new TableRow({children:[blueCell('You receive',2000),cell('Sponsorship credit and co-branding; post-event member introductions; optional one survey question to the group',{width:7360,fill:GRAY})]}),
+            new TableRow({children:[blueCell('Timing',2000),cell('Scheduled upon agreement; dates TBD based on group calendar',{width:7360})]}),
+            new TableRow({children:[blueCell('Investment',2000),cell(`${fmt(s.price)} — includes session production, NeuGroup facilitation, and post-event member introductions`,{width:7360,fill:GRAY})]})
+          ]
+        }),
+        new Paragraph({spacing:{before:200,after:200},children:[new TextRun({text:''})]})
+      );
+    });
+
+    // Total if multiple sessions
+    const totalRow = c.sessions.length > 1 ? [
+      new Table({width:{size:9360,type:WidthType.DXA},columnWidths:[7360,2000],
+        rows:[new TableRow({children:[
+          new TableCell({borders:noBorders,shading:{fill:LBLUE,type:ShadingType.CLEAR},
+            margins:{top:120,bottom:120,left:240,right:160},
+            children:[new Paragraph({children:[new TextRun({text:'Total investment (all sessions)',bold:true,size:22,color:NAVY,font:'Calibri'})]})]
+          }),
+          new TableCell({borders:noBorders,shading:{fill:LBLUE,type:ShadingType.CLEAR},
+            margins:{top:120,bottom:120,left:160,right:240},
+            children:[new Paragraph({alignment:AlignmentType.RIGHT,children:[new TextRun({text:fmt(c.sessions.reduce((s,x)=>s+x.price,0)),bold:true,size:22,color:NAVY,font:'Calibri'})]})]
+          })
+        ]})]
+      }),
+      new Paragraph({spacing:{before:200,after:200},children:[new TextRun({text:''})]})
+    ] : [];
+
+    // Disclaimer + closing
+    const introParas = sssProposal.split('\n\n').filter(Boolean).map(p =>
+      new Paragraph({spacing:{before:80,after:120},children:[new TextRun({text:p.trim(),size:22,font:'Calibri'})]})
+    );
+
+    const children = [
+      headerTable,
+      new Paragraph({spacing:{before:240,after:120},children:[new TextRun({text:''})]}),
+      // Rep contact line
+      new Paragraph({spacing:{before:0,after:200},alignment:AlignmentType.RIGHT,
+        children:[new TextRun({text:`${c.rep}  ·  ${c.repEmail}`,size:20,color:'666666',font:'Calibri'})]}),
+      ...introParas,
+      new Paragraph({spacing:{before:200,after:120},children:[new TextRun({text:''})]}),
+      navyBanner('Why NeuGroup'),
+      new Paragraph({spacing:{before:120,after:120},children:[new TextRun({text:''})]}),
+      whyTable,
+      new Paragraph({spacing:{before:200,after:120},children:[new TextRun({text:''})]}),
+      navyBanner('Partnership Options'),
+      new Paragraph({spacing:{before:120,after:120},children:[new TextRun({text:''})]}),
+      ...sessionTables,
+      ...totalRow,
+      // Disclaimer
+      new Table({width:{size:9360,type:WidthType.DXA},columnWidths:[9360],
+        rows:[new TableRow({children:[new TableCell({borders,width:{size:9360,type:WidthType.DXA},
+          shading:{fill:'F8F9FA',type:ShadingType.CLEAR},margins:{top:120,bottom:120,left:200,right:200},
+          children:[new Paragraph({children:[new TextRun({text:'NeuGroup does not offer exclusivity. We may work with multiple firms in a category over time and will always be transparent with members about who is involved and why. Our independence is what makes access valuable.',size:18,color:'666666',italics:true,font:'Calibri'})]})]
+        })]})]
+      }),
+      new Paragraph({spacing:{before:200,after:120},children:[new TextRun({text:''})]}),
+      // Closing
+      new Table({width:{size:9360,type:WidthType.DXA},columnWidths:[9360],
+        rows:[new TableRow({children:[new TableCell({borders:noBorders,width:{size:9360,type:WidthType.DXA},
+          shading:{fill:NAVY,type:ShadingType.CLEAR},margins:{top:160,bottom:160,left:240,right:240},
+          children:[
+            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:"Ready to move forward? Let's get on a call to align the right option and next steps.",bold:true,size:22,color:WHITE,font:'Calibri'})]}),
+            new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:`${c.rep}  ·  ${c.repEmail}  ·  neugroup.com`,size:20,color:'BDD7EE',font:'Calibri'})]})
+          ]
+        })]})]
+      })
+    ];
+
+    const doc = new Document({
+      styles:{default:{document:{run:{font:'Calibri',size:22}}}},
+      sections:[{properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1440,bottom:1440,left:1440}}},children}]
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${c.sponsor.replace(/\s+/g,'_')}_SSS_Proposal_${c.qdate}.docx`;
+    a.click();
+    showSSSStatus('✓ Proposal downloaded successfully', 'ok');
+  } catch(e) {
+    showSSSStatus('Error: ' + e.message, 'err');
+    console.error(e);
+  }
+  btn.disabled = false; btn.textContent = 'Download .docx';
+  checkSSSReady();
+}
+
 // ── Init ─────────────────────────────────────────────────────────────────────
 updatePricing();
+updateSSSPricing();
 </script>
 </body>
 </html>
+
 
 
