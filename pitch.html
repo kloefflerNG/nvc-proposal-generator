@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>NeuGroup Pitch Deck Generator</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
+<style>
+:root {
+  --navy: #0F1F3D;
+  --navy-mid: #1a2f52;
+  --blue: #2E5FA3;
+  --gold: #C9A84C;
+  --gold-light: #F5E6C0;
+  --bg: #F4F6F9;
+  --surface: #FFFFFF;
+  --border: #E2E6ED;
+  --text: #1A1A2E;
+  --muted: #6B7280;
+  --success-bg: #ECFDF5;
+  --success: #065F46;
+  --info-bg: #EFF6FF;
+  --info: #1E40AF;
+  --danger-bg: #FEF2F2;
+  --danger: #991B1B;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+
+/* Login */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center;box-shadow:0 4px 24px rgba(15,31,61,.1)}
+.login-card input[type=password]{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;margin-bottom:.75rem;background:var(--bg);outline:none}
+.login-card input[type=password]:focus{border-color:var(--gold)}
+.login-card button{width:100%;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer}
+.login-card button:hover{opacity:.85}
+.login-err{color:var(--danger);font-size:12px;margin-top:.5rem;display:none}
+
+/* App */
+#app{display:none;min-height:100vh}
+.topbar{background:var(--navy)}
+.topbar-inner{padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08)}
+.topbar-eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+.topbar-brand{font-size:22px;font-weight:800;color:#fff;line-height:1.1;margin:.2rem 0 .15rem}
+.topbar-tagline{font-size:12px;color:rgba(255,255,255,.55)}
+.topbar-right{font-size:12px;color:rgba(255,255,255,.5);cursor:pointer;padding:6px 12px;border:1px solid rgba(255,255,255,.15);border-radius:6px;text-decoration:none}
+.topbar-right:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+.topbar-nav{padding:.6rem 1.5rem;display:flex;align-items:center;gap:.5rem;background:var(--navy-mid);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav-link{font-size:12px;color:rgba(255,255,255,.5);text-decoration:none;padding:5px 14px;border:1px solid rgba(255,255,255,.12);border-radius:20px}
+.nav-link:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+.nav-link.active{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:700}
+
+.main{max-width:860px;margin:0 auto;padding:1.5rem 1rem 4rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1rem}
+.card-title{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.9rem}
+.section-header{display:flex;align-items:center;margin-bottom:1rem}
+.section-header-title{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em}
+.step-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;margin-right:6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.row1{margin-bottom:12px}
+@media(max-width:600px){.row2,.row3{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11px;font-weight:500;color:var(--muted)}
+.field input,.field select,.field textarea{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;background:var(--surface);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold)}
+.field textarea{resize:vertical;min-height:72px;line-height:1.5}
+.toggle-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}
+.tb{padding:5px 14px;border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;background:var(--surface);color:var(--muted);transition:all .15s;user-select:none}
+.tb.on{background:var(--gold-light);color:var(--navy);border-color:var(--gold);font-weight:600}
+.btn{padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--text);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.btn:hover:not(:disabled){background:var(--bg);border-color:var(--gold);color:var(--navy)}
+.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.primary:hover:not(:disabled){opacity:.85}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:1rem}
+.status{margin-top:.75rem;padding:9px 14px;border-radius:var(--radius-sm);font-size:12px;display:none;line-height:1.5}
+.status.ok{background:var(--success-bg);color:var(--success);border:1px solid #6EE7B7;display:block}
+.status.err{background:var(--danger-bg);color:var(--danger);border:1px solid #FCA5A5;display:block}
+.status.info{background:var(--info-bg);color:var(--info);border:1px solid #BFDBFE;display:block}
+@keyframes sp{to{transform:rotate(360deg)}}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:sp .6s linear infinite}
+.preview{background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);padding:1rem;font-size:12px;color:var(--muted);line-height:1.6;white-space:pre-wrap;font-family:'Menlo','Courier New',monospace;max-height:180px;overflow-y:auto}
+.preview.has-content{color:var(--text)}
+.hint{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px}
+
+/* History entries */
+.history-entry{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.9rem;margin-bottom:8px}
+.history-entry .row3{margin-bottom:0}
+
+/* Slide preview chips */
+.slide-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.chip{padding:4px 10px;background:var(--navy);color:#fff;border-radius:4px;font-size:11px;font-weight:500}
+.chip.optional{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
+.chip.active{background:var(--gold-light);color:var(--navy);border:1px solid var(--gold)}
+
+footer{text-align:center;padding:1.5rem;font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:4px">NeuGroup Intelligence</div>
+    <div style="font-size:24px;font-weight:800;color:var(--navy);margin-bottom:.25rem">Pitch Deck Generator</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:1.25rem">Enter your team password to continue</div>
+    <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')tryLogin()"/>
+    <button onclick="tryLogin()">Sign in</button>
+    <div class="login-err" id="login-err">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div>
+        <div class="topbar-eyebrow">NeuGroup Intelligence &nbsp;·&nbsp; Pitch Deck Generator</div>
+        <div class="topbar-brand">NeuGroup Pitch Deck Generator</div>
+        <div class="topbar-tagline">Validated Insight. Enabled Outcomes.</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <a href="/" class="topbar-right">← Proposal Generator</a>
+        <div class="topbar-right" onclick="logout()" style="cursor:pointer">Sign out</div>
+      </div>
+    </div>
+    <div class="topbar-nav">
+      <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.06em;text-transform:uppercase;margin-right:.5rem">Tools</span>
+      <a href="/" class="nav-link">Proposal Generator</a>
+      <a href="/pitch.html" class="nav-link active">Pitch Deck</a>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Step 1: Partner details -->
+    <div class="card">
+      <div class="section-header"><span class="step-badge">1</span><span class="section-header-title">Partner details</span></div>
+      <div class="row2">
+        <div class="field"><label>Partner / company name</label><input id="partner" placeholder="e.g. EY" /></div>
+        <div class="field"><label>NeuGroup rep name</label><input id="rep" placeholder="e.g. Kristy Loeffler" /></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Rep title</label><input id="rep-title" placeholder="e.g. CFO & Head of Operations" /></div>
+        <div class="field"><label>Rep email</label><input id="rep-email" placeholder="kloeffler@neugroup.com" /></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Quote date / period</label><input id="period" placeholder="e.g. April 2026" /></div>
+        <div class="field"><label>Partner's core practice / focus</label><input id="practice" placeholder="e.g. Enterprise Reimagined, value creation" /></div>
+      </div>
+    </div>
+
+    <!-- Step 2: New or Repeat -->
+    <div class="card">
+      <div class="section-header"><span class="step-badge">2</span><span class="section-header-title">Sponsor type</span></div>
+      <div class="hint">Is this a new sponsor or someone NeuGroup has worked with before?</div>
+      <div class="toggle-row">
+        <div class="tb on" id="tog-new" onclick="setSponsorType('new')">New sponsor</div>
+        <div class="tb" id="tog-repeat" onclick="setSponsorType('repeat')">Repeat sponsor</div>
+      </div>
+
+      <!-- History section (repeat only) -->
+      <div id="history-section" style="display:none;margin-top:1.25rem">
+        <div style="font-size:11px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">Sponsorship history</div>
+        <div class="hint">Add past sponsorships — these populate the "Our History Together" slide (EY-style timeline).</div>
+        <div id="history-entries"></div>
+        <button class="btn" style="font-size:12px;margin-top:4px" onclick="addHistoryEntry()">+ Add sponsorship</button>
+        <div style="margin-top:.75rem;padding:.7rem;background:var(--info-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--info)">
+          Total partnership value: <strong id="history-total">$0</strong> across <strong id="history-count">0</strong> sponsorships
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Collaboration options -->
+    <div class="card">
+      <div class="section-header"><span class="step-badge">3</span><span class="section-header-title">Collaboration model (slide 6)</span></div>
+      <div class="hint">Three partnership options shown in the deck. Pre-filled with defaults — edit to match this specific partner.</div>
+      <div class="row1">
+        <div class="field"><label>Option 1 — Title</label><input id="opt1-title" value="Sponsored Peer Series" /></div>
+      </div>
+      <div class="row1">
+        <div class="field"><label>Option 1 — Description</label><textarea id="opt1-desc" rows="2">A dedicated NeuGroup peer group or virtual series with [Partner] as the anchor sponsor and content contributor — directly aligned to [Partner]'s practice and the practitioners they most want to reach.</textarea></div>
+      </div>
+      <div class="row1">
+        <div class="field"><label>Option 2 — Title</label><input id="opt2-title" value="Joint Research" /></div>
+      </div>
+      <div class="row1">
+        <div class="field"><label>Option 2 — Description</label><textarea id="opt2-desc" rows="2">Co-branded benchmarking research on how senior finance leaders are navigating the mandates [Partner]'s practice is built to serve. Credible to both audiences, distributed through NeuGroup's senior practitioner network.</textarea></div>
+      </div>
+      <div class="row1">
+        <div class="field"><label>Option 3 — Title</label><input id="opt3-title" value="Content Partnership" /></div>
+      </div>
+      <div class="row1">
+        <div class="field"><label>Option 3 — Description</label><textarea id="opt3-desc" rows="2">[Partner] brings research, frameworks, and sector data into NeuGroup peer group sessions — reaching the CFOs, treasurers, and FP&A leaders [Partner]'s practice most wants to influence.</textarea></div>
+      </div>
+    </div>
+
+    <!-- Step 4: Context -->
+    <div class="card">
+      <div class="section-header"><span class="step-badge">4</span><span class="section-header-title">Context for AI</span></div>
+      <div class="row1">
+        <div class="field"><label>Why this partner + NeuGroup? (shapes slides 2–5)</label>
+          <textarea id="context" placeholder="e.g. EY's Enterprise Reimagined framework focuses on top-down transformation. NeuGroup is where the finance leaders executing those mandates compare notes. They've been an on-and-off sponsor since 2023 and we want to pitch a more structured partnership."></textarea>
+        </div>
+      </div>
+      <div class="row1">
+        <div class="field"><label>Partner's key value levers / topics (for the alignment slide)</label>
+          <textarea id="levers" placeholder="e.g. Revenue & margin enhancement, working capital optimization, M&A integration, cost reduction, digital transformation"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: Deck preview & generate -->
+    <div class="card">
+      <div class="section-header"><span class="step-badge">5</span><span class="section-header-title">Slides included</span></div>
+      <div class="slide-chips">
+        <div class="chip">1 · Title</div>
+        <div class="chip">2 · We've done this</div>
+        <div class="chip">3 · Partnership rationale</div>
+        <div class="chip">4 · Natural alignment</div>
+        <div class="chip">5 · Shared audience</div>
+        <div class="chip">6 · Collaboration model</div>
+        <div class="chip active" id="chip-history">7 · History (repeat only)</div>
+        <div class="chip">8 · NeuGroup at a glance</div>
+        <div class="chip">9 · Let's talk</div>
+      </div>
+      <div class="hint">AI writes the custom copy for slides 2–5. All other slides use your inputs above.</div>
+      <div class="preview" id="preview-content">Click "Generate deck copy" to preview the AI-written slide content...</div>
+
+      <div class="actions">
+        <button class="btn" id="btn-gen" onclick="generateCopy()">Generate deck copy ↗</button>
+        <button class="btn primary" id="btn-pptx" onclick="downloadPPTX()" disabled>Download .pptx</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+
+  </div>
+  <footer>NeuGroup NVC · Internal tool · <span id="yr"></span></footer>
+</div>
+
+<script>
+// ── Auth ─────────────────────────────────────────────────────────────────────
+const PW_HASH = 'b17e0ed5d7bfae6ef0a72ba9371fee20c11fed83ca2de1a80f37fec29fddc1a7';
+async function sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+async function tryLogin(){const pw=document.getElementById('pw-input').value;const hash=await sha256(pw);if(hash===PW_HASH){sessionStorage.setItem('nvc_auth','1');document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block'}else{document.getElementById('login-err').style.display='block'}}
+function logout(){sessionStorage.removeItem('nvc_auth');location.reload()}
+if(sessionStorage.getItem('nvc_auth')==='1'){document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block'}
+document.getElementById('yr').textContent=new Date().getFullYear();
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let sponsorType = 'new';
+let generatedCopy = null;
+
+function setSponsorType(t) {
+  sponsorType = t;
+  document.getElementById('tog-new').classList.toggle('on', t==='new');
+  document.getElementById('tog-repeat').classList.toggle('on', t==='repeat');
+  document.getElementById('history-section').style.display = t==='repeat' ? 'block' : 'none';
+  document.getElementById('chip-history').className = 'chip ' + (t==='repeat' ? 'active' : 'optional');
+}
+
+// ── History entries ───────────────────────────────────────────────────────────
+let historyCount = 0;
+
+function addHistoryEntry(period='', name='', amount='', contact='') {
+  historyCount++;
+  const id = historyCount;
+  const div = document.createElement('div');
+  div.className = 'history-entry';
+  div.id = 'he-' + id;
+  div.innerHTML = `
+    <div class="row3" style="margin-bottom:0;align-items:end">
+      <div class="field"><label>Period (e.g. H1 2024)</label><input class="he-period" value="${period}" oninput="updateHistoryTotal()"/></div>
+      <div class="field"><label>Session / program name</label><input class="he-name" value="${name}"/></div>
+      <div class="field"><label>Amount ($)</label><input class="he-amount" type="number" value="${amount}" oninput="updateHistoryTotal()"/></div>
+    </div>
+    <div class="row2" style="margin-top:8px;margin-bottom:0;align-items:end">
+      <div class="field"><label>NeuGroup contact</label><input class="he-contact" value="${contact}"/></div>
+      <div style="display:flex;align-items:flex-end;padding-bottom:1px">
+        <button class="btn" style="font-size:11px;padding:6px 10px;color:var(--danger);border-color:var(--danger)" onclick="document.getElementById('he-${id}').remove();updateHistoryTotal()">Remove</button>
+      </div>
+    </div>`;
+  document.getElementById('history-entries').appendChild(div);
+  updateHistoryTotal();
+}
+
+function updateHistoryTotal() {
+  const amounts = [...document.querySelectorAll('.he-amount')].map(el=>parseFloat(el.value)||0);
+  const total = amounts.reduce((a,b)=>a+b,0);
+  document.getElementById('history-total').textContent = '$'+total.toLocaleString();
+  document.getElementById('history-count').textContent = amounts.length;
+}
+
+function getHistory() {
+  return [...document.querySelectorAll('.history-entry')].map(el => ({
+    period: el.querySelector('.he-period').value,
+    name: el.querySelector('.he-name').value,
+    amount: parseFloat(el.querySelector('.he-amount').value)||0,
+    contact: el.querySelector('.he-contact').value
+  })).filter(h => h.name || h.amount);
+}
+
+function g(id){return document.getElementById(id).value||''}
+
+function showStatus(msg,type){const s=document.getElementById('status');s.className='status '+type;s.innerHTML=msg}
+
+// ── API call ──────────────────────────────────────────────────────────────────
+async function claude(prompt) {
+  const r = await fetch('/.netlify/functions/claude', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:prompt}]})
+  });
+  if(!r.ok) throw new Error('API error '+r.status);
+  const d = await r.json();
+  const blocks = d.content||[];
+  const block = blocks.find(b=>b.type==='text');
+  if(block) return block.text;
+  if(d.type==='error') throw new Error(d.error?.message||'API error');
+  return '';
+}
+
+// ── Generate copy ─────────────────────────────────────────────────────────────
+async function generateCopy() {
+  const btn = document.getElementById('btn-gen');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Generating...';
+  document.getElementById('preview-content').classList.remove('has-content');
+  document.getElementById('preview-content').textContent='';
+
+  const partner = g('partner')||'Partner';
+  const practice = g('practice');
+  const context = g('context');
+  const levers = g('levers');
+
+  const prompt=`You are writing slide copy for a NeuGroup partnership pitch deck. NeuGroup's voice: clear, direct, confident, not salesy. No fluff.
+
+Partner: ${partner}
+Their focus: ${practice}
+Context: ${context}
+Key value levers: ${levers}
+
+Write concise copy for these 4 slides. Return as JSON only, no markdown, no preamble:
+{
+  "slide2_headline": "2-line headline for 'We've done this' slide (NeuGroup's PE track record, ~8 words max per line)",
+  "slide2_body": "2-3 sentence paragraph. NeuGroup's proven track record running peer groups for PE portfolio finance leaders. Make it concrete.",
+  "slide2_stats": ["~30 portfolio companies per group", "Multi-function. Multi-geography.", "Built around value creation execution"],
+  "slide3_headline": "2-line headline: '[Partner] does X. NeuGroup is where leaders Y.' (~8 words each)",
+  "slide3_body": "2-3 sentences. What ${partner} does, what NeuGroup adds. Complementary, not competitive.",
+  "slide3_what_partner": "One sentence: what ${partner} does",
+  "slide3_what_neugroup": "One sentence: what NeuGroup adds",
+  "slide4_headline": "2-line headline: '${partner}'s [focus] — live in every NeuGroup peer group'",
+  "slide4_levers": [
+    {"num":"01","title":"[lever 1 title]","desc":"[1 sentence, NeuGroup angle]"},
+    {"num":"02","title":"[lever 2 title]","desc":"[1 sentence, NeuGroup angle]"},
+    {"num":"03","title":"[lever 3 title]","desc":"[1 sentence, NeuGroup angle]"},
+    {"num":"04","title":"[lever 4 title]","desc":"[1 sentence, NeuGroup angle]"},
+    {"num":"05","title":"[lever 5 title]","desc":"[1 sentence, NeuGroup angle]"}
+  ],
+  "slide5_headline": "2-line headline: 'A shared audience ${partner} already serves — and NeuGroup reaches.'",
+  "slide5_body": "2 sentences. The shared audience — who they are, why both organizations serve them.",
+  "slide5_audience1_title": "Audience segment 1 title",
+  "slide5_audience1_desc": "2 sentences about this audience segment",
+  "slide5_audience2_title": "Audience segment 2 title",
+  "slide5_audience2_desc": "2 sentences about this audience segment",
+  "slide5_closing": "One punchy closing line: '[Partner] does X. NeuGroup is where finance leaders do Y.'"
+}`;
+
+  try {
+    const raw = await claude(prompt);
+    const clean = raw.replace(/```json|```/g,'').trim();
+    generatedCopy = JSON.parse(clean);
+
+    // Replace [Partner] placeholders
+    function rp(s){return s?s.replace(/\[Partner\]/g,partner).replace(/\[partner\]/g,partner):s}
+    Object.keys(generatedCopy).forEach(k=>{
+      if(typeof generatedCopy[k]==='string') generatedCopy[k]=rp(generatedCopy[k]);
+      if(Array.isArray(generatedCopy[k])) generatedCopy[k]=generatedCopy[k].map(item=>
+        typeof item==='string'?rp(item):{...item,title:rp(item.title),desc:rp(item.desc)}
+      );
+    });
+
+    const preview = `SLIDE 2 — We've done this\n${generatedCopy.slide2_headline}\n${generatedCopy.slide2_body}\n\nSLIDE 3 — Partnership rationale\n${generatedCopy.slide3_headline}\n${generatedCopy.slide3_body}\n\nSLIDE 4 — Natural alignment\n${generatedCopy.slide4_headline}\n${generatedCopy.slide4_levers.map(l=>l.num+' '+l.title+': '+l.desc).join('\n')}\n\nSLIDE 5 — Shared audience\n${generatedCopy.slide5_headline}\n${generatedCopy.slide5_body}`;
+
+    document.getElementById('preview-content').textContent=preview;
+    document.getElementById('preview-content').classList.add('has-content');
+    document.getElementById('btn-pptx').disabled=false;
+  } catch(e){
+    showStatus('Failed to generate: '+e.message,'err');
+  }
+  btn.disabled=false; btn.textContent='Regenerate deck copy ↗';
+}
+
+// ── PPTX generation ───────────────────────────────────────────────────────────
+async function downloadPPTX() {
+  const btn = document.getElementById('btn-pptx');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Building .pptx...';
+  showStatus('<span class="spin"></span> Generating PowerPoint...','info');
+
+  try {
+    const partner = g('partner')||'Partner';
+    const rep = g('rep')||'NeuGroup';
+    const repTitle = g('rep-title')||'';
+    const repEmail = g('rep-email')||'neugroup.com';
+    const period = g('period')||new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    const history = getHistory();
+    const c = generatedCopy;
+
+    // Colors from actual template
+    const BG = '0B2A4A';       // Deep navy background
+    const BG2 = '143D6B';      // Slightly lighter navy
+    const TEAL = '6FA3A3';     // Teal accent bar
+    const GOLD = 'F2C94C';     // Gold divider/accent
+    const WHITE = 'FFFFFF';
+    const LBLUE = 'A2C4E0';    // Light blue for secondary text
+    const CARD = '1E3A54';     // Card background
+    const CARD2 = 'F0F5FA';    // Light card
+
+    const pres = new PptxGenJS();
+    pres.layout = 'LAYOUT_WIDE'; // Use wide to approximate portrait with 7.5x10
+    // Actually use custom size — portrait deck
+    pres.defineLayout({ name: 'PORTRAIT', width: 7.5, height: 10 });
+    pres.layout = 'PORTRAIT';
+
+    // Helper: add standard slide furniture
+    function addFurniture(slide, eyebrow='') {
+      // Background
+      slide.background = { color: BG };
+      // Teal left accent bar
+      slide.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:0.18,h:10,fill:{color:TEAL},line:{color:TEAL}});
+      // Footer area
+      slide.addShape(pres.shapes.RECTANGLE,{x:0,y:9.0,w:7.5,h:1.0,fill:{color:BG2},line:{color:BG2}});
+      // Gold footer line
+      slide.addShape(pres.shapes.RECTANGLE,{x:0,y:8.97,w:7.5,h:0.06,fill:{color:GOLD},line:{color:GOLD}});
+      // neugroup.com footer
+      slide.addText('neugroup.com',{x:0.3,y:9.1,w:3,h:0.25,fontSize:9,color:LBLUE,fontFace:'Calibri'});
+      if(eyebrow) {
+        slide.addText(eyebrow,{x:0.4,y:0.35,w:5,h:0.22,fontSize:7,color:TEAL,bold:true,charSpacing:3,fontFace:'Calibri'});
+      }
+    }
+
+    // ── SLIDE 1: Title ─────────────────────────────────────────────────────
+    const s1 = pres.addSlide();
+    addFurniture(s1,'PARTNERSHIP OPPORTUNITY');
+    s1.addText(['NeuGroup +\n',partner].join(''),{x:0.4,y:1.1,w:4.5,h:1.8,fontSize:42,bold:true,color:WHITE,fontFace:'Calibri',valign:'top'});
+    s1.addShape(pres.shapes.RECTANGLE,{x:0.4,y:3.1,w:4.5,h:0.05,fill:{color:GOLD},line:{color:GOLD}});
+    s1.addText('Where '+partner+"'s practice meets the\nfinance leaders who live inside it.",{x:0.4,y:3.3,w:4.8,h:0.8,fontSize:13,color:LBLUE,fontFace:'Calibri',valign:'top'});
+    s1.addText('The trusted, independent peer network.\nNeuGroup is where that conversation happens.',{x:0.4,y:4.2,w:4.8,h:0.7,fontSize:11,color:TEAL,fontFace:'Calibri',italic:true});
+    // Period / rep info in bottom right
+    s1.addText(rep+'\n'+repTitle+'\n'+repEmail,{x:4.2,y:9.1,w:3,h:0.7,fontSize:8,color:WHITE,fontFace:'Calibri',align:'right'});
+    s1.addText('NeuGroup  ·  '+period,{x:0.4,y:9.15,w:3.5,h:0.25,fontSize:8,color:LBLUE,fontFace:'Calibri'});
+
+    // ── SLIDE 2: We've done this ────────────────────────────────────────────
+    const s2 = pres.addSlide();
+    addFurniture(s2,'WHERE NEUGROUP\'S VALUE CREATION LIVES');
+    const s2head = c.slide2_headline||("We've done this.\nAt scale. Inside\nleading PE firms.");
+    s2.addText(s2head,{x:0.4,y:1.0,w:3.8,h:2.2,fontSize:28,bold:true,color:WHITE,fontFace:'Calibri',valign:'top'});
+    s2.addText(c.slide2_body||'',{x:0.4,y:3.4,w:3.8,h:1.5,fontSize:11,color:LBLUE,fontFace:'Calibri',valign:'top'});
+    // Stats on right side
+    const stats = c.slide2_stats||['~30 portfolio companies per group','Multi-function. Multi-geography.','Built around value creation execution'];
+    stats.forEach((stat,i)=>{
+      const y=1.2+i*2.2;
+      s2.addShape(pres.shapes.RECTANGLE,{x:4.5,y:y,w:2.8,h:1.9,fill:{color:CARD},line:{color:BG2}});
+      s2.addShape(pres.shapes.RECTANGLE,{x:4.5,y:y,w:0.06,h:1.9,fill:{color:GOLD},line:{color:GOLD}});
+      s2.addText(stat,{x:4.65,y:y+0.15,w:2.55,h:1.6,fontSize:11,bold:true,color:WHITE,fontFace:'Calibri',valign:'top'});
+    });
+
+    // ── SLIDE 3: Partnership rationale ─────────────────────────────────────
+    const s3 = pres.addSlide();
+    addFurniture(s3,'THE PARTNERSHIP RATIONALE');
+    const s3head = c.slide3_headline||('NeuGroup validates.\n'+partner+' leads the way.');
+    s3.addText(s3head,{x:0.4,y:1.0,w:3.8,h:2.0,fontSize:28,bold:true,color:WHITE,fontFace:'Calibri',valign:'top'});
+    s3.addText(c.slide3_body||'',{x:0.4,y:3.2,w:3.8,h:1.5,fontSize:11,color:LBLUE,fontFace:'Calibri',valign:'top'});
+    // Two boxes
+    [{label:'What '+partner+' does',text:c.slide3_what_partner||'',y:1.2},{label:'What NeuGroup adds',text:c.slide3_what_neugroup||'',y:4.0}].forEach(box=>{
+      s3.addShape(pres.shapes.RECTANGLE,{x:4.4,y:box.y,w:2.9,h:2.5,fill:{color:CARD},line:{color:BG2}});
+      s3.addShape(pres.shapes.RECTANGLE,{x:4.4,y:box.y,w:2.9,h:0.35,fill:{color:BG2},line:{color:BG2}});
+      s3.addText(box.label,{x:4.45,y:box.y+0.06,w:2.8,h:0.25,fontSize:8,bold:true,color:GOLD,charSpacing:1,fontFace:'Calibri'});
+      s3.addText(box.text,{x:4.45,y:box.y+0.45,w:2.8,h:1.9,fontSize:10,color:WHITE,fontFace:'Calibri',valign:'top'});
+    });
+
+    // ── SLIDE 4: Natural alignment ─────────────────────────────────────────
+    const s4 = pres.addSlide();
+    addFurniture(s4,'NATURAL ALIGNMENT');
+    const s4head = c.slide4_headline||(partner+"'s value creation levers\n— live in every NeuGroup peer group");
+    s4.addText(s4head,{x:0.4,y:1.0,w:6.8,h:1.2,fontSize:22,bold:true,color:WHITE,fontFace:'Calibri',valign:'top'});
+    const levers4 = c.slide4_levers||[];
+    levers4.forEach((lev,i)=>{
+      const y=2.5+i*1.28;
+      s4.addShape(pres.shapes.RECTANGLE,{x:0.4,y:y,w:6.8,h:1.15,fill:{color:CARD},line:{color:BG2}});
+      s4.addText(lev.num,{x:0.5,y:y+0.2,w:0.45,h:0.7,fontSize:14,bold:true,color:GOLD,fontFace:'Calibri'});
+      s4.addText(lev.title,{x:1.05,y:y+0.1,w:5.9,h:0.38,fontSize:12,bold:true,color:WHITE,fontFace:'Calibri'});
+      s4.addText(lev.desc,{x:1.05,y:y+0.5,w:5.9,h:0.55,fontSize:9.5,color:LBLUE,fontFace:'Calibri'});
+    });
+
+    // ── SLIDE 5: Shared audience ────────────────────────────────────────────
+    const s5 = pres.addSlide();
+    addFurniture(s5,'THE SHARED AUDIENCE');
+    const s5head = c.slide5_headline||('A shared audience\n'+partner+' already serves —\nand NeuGroup reaches.');
+    s5.addText(s5head,{x:0.4,y:1.0,w:3.5,h:2.0,fontSize:24,bold:true,color:WHITE,fontFace:'Calibri',valign:'top'});
+    s5.addText(c.slide5_body||'',{x:0.4,y:3.2,w:3.5,h:1.2,fontSize:11,color:LBLUE,fontFace:'Calibri',valign:'top'});
+    // Two audience boxes
+    [{title:c.slide5_audience1_title||'Audience 1',desc:c.slide5_audience1_desc||'',y:1.1},{title:c.slide5_audience2_title||'Audience 2',desc:c.slide5_audience2_desc||'',y:5.0}].forEach(box=>{
+      s5.addShape(pres.shapes.RECTANGLE,{x:4.2,y:box.y,w:3.1,h:3.6,fill:{color:CARD},line:{color:BG2}});
+      s5.addShape(pres.shapes.RECTANGLE,{x:4.2,y:box.y,w:3.1,h:0.4,fill:{color:BG2},line:{color:BG2}});
+      s5.addText(box.title,{x:4.25,y:box.y+0.07,w:3.0,h:0.28,fontSize:9,bold:true,color:GOLD,charSpacing:1,fontFace:'Calibri'});
+      s5.addText(box.desc,{x:4.25,y:box.y+0.55,w:3.0,h:2.9,fontSize:10,color:WHITE,fontFace:'Calibri',valign:'top'});
+    });
+    if(c.slide5_closing) s5.addText(c.slide5_closing,{x:0.4,y:4.6,w:3.5,h:0.5,fontSize:10,color:TEAL,fontFace:'Calibri',italic:true});
+
+    // ── SLIDE 6: Collaboration model ────────────────────────────────────────
+    const s6 = pres.addSlide();
+    addFurniture(s6,'COLLABORATION MODEL');
+    s6.addText('Three ways to\nwork together',{x:0.4,y:1.0,w:3.2,h:1.5,fontSize:28,bold:true,color:WHITE,fontFace:'Calibri',valign:'top'});
+    const opts=[
+      {num:'01',title:g('opt1-title'),desc:g('opt1-desc').replace(/\[Partner\]/g,partner)},
+      {num:'02',title:g('opt2-title'),desc:g('opt2-desc').replace(/\[Partner\]/g,partner)},
+      {num:'03',title:g('opt3-title'),desc:g('opt3-desc').replace(/\[Partner\]/g,partner)},
+    ];
+    opts.forEach((opt,i)=>{
+      const y=2.8+i*2.0;
+      s6.addShape(pres.shapes.RECTANGLE,{x:0.4,y:y,w:6.8,h:1.8,fill:{color:CARD},line:{color:BG2}});
+      s6.addText(opt.num,{x:0.5,y:y+0.25,w:0.55,h:0.8,fontSize:16,bold:true,color:GOLD,fontFace:'Calibri'});
+      s6.addText(opt.title,{x:1.15,y:y+0.15,w:5.9,h:0.38,fontSize:12,bold:true,color:WHITE,fontFace:'Calibri'});
+      s6.addText(opt.desc,{x:1.15,y:y+0.55,w:5.9,h:1.1,fontSize:9.5,color:LBLUE,fontFace:'Calibri',valign:'top'});
+    });
+
+    // ── SLIDE 7: History (repeat sponsors only) ─────────────────────────────
+    if(sponsorType==='repeat' && history.length>0) {
+      const s7 = pres.addSlide();
+      addFurniture(s7,'OUR HISTORY TOGETHER');
+      s7.addText(partner+' Sponsorship Timeline',{x:0.4,y:1.1,w:6.7,h:0.4,fontSize:13,color:LBLUE,fontFace:'Calibri'});
+      s7.addText('OUR HISTORY TOGETHER',{x:0.4,y:0.75,w:6.7,h:0.4,fontSize:16,bold:true,color:WHITE,charSpacing:1,fontFace:'Calibri'});
+
+      // Timeline line
+      s7.addShape(pres.shapes.RECTANGLE,{x:1.18,y:1.9,w:0.015,h:7,fill:{color:LBLUE},line:{color:LBLUE}});
+
+      const entryH = Math.min(0.85, 7.0/Math.max(history.length,1));
+      history.forEach((h,i)=>{
+        const y=1.85+i*entryH;
+        // Dot on timeline
+        s7.addShape(pres.shapes.OVAL,{x:1.11,y:y+0.02,w:0.14,h:0.14,fill:{color:GOLD},line:{color:GOLD}});
+        // Period label
+        s7.addText(h.period,{x:0.22,y:y,w:0.85,h:0.22,fontSize:8,bold:true,color:GOLD,fontFace:'Calibri',align:'right'});
+        // Name + amount + contact
+        s7.addText(h.name,{x:1.4,y:y,w:5.7,h:0.22,fontSize:10,bold:true,color:WHITE,fontFace:'Calibri'});
+        s7.addText('$'+h.amount.toLocaleString()+(h.contact?'  |  '+h.contact:''),{x:1.4,y:y+0.22,w:5.7,h:0.18,fontSize:8.5,color:LBLUE,fontFace:'Calibri'});
+      });
+
+      // Total
+      const total=history.reduce((s,h)=>s+h.amount,0);
+      s7.addShape(pres.shapes.RECTANGLE,{x:0.4,y:9.0,w:6.7,h:0.0,fill:{color:BG2},line:{color:BG2}});
+      s7.addText('TOTAL PARTNERSHIP VALUE',{x:0.4,y:8.6,w:4,h:0.22,fontSize:8,bold:true,color:GOLD,charSpacing:2,fontFace:'Calibri'});
+      s7.addText('$'+total.toLocaleString()+'  across '+history.length+' sponsorships',{x:0.4,y:8.8,w:6.7,h:0.22,fontSize:11,color:WHITE,fontFace:'Calibri'});
+    }
+
+    // ── SLIDE 8: NeuGroup at a glance ───────────────────────────────────────
+    const s8 = pres.addSlide();
+    addFurniture(s8,'NEUGROUP AT A GLANCE');
+    s8.addText('The global peer network for\nsenior finance and treasury leaders',{x:0.4,y:1.0,w:6.7,h:1.2,fontSize:22,bold:true,color:WHITE,fontFace:'Calibri',valign:'top'});
+    const stats8=[{num:'500+',label:'Member Companies'},{num:'40+',label:'Curated Peer Groups'},{num:'CFO',label:'Level Membership'},{num:'Global',label:'Network Reach'}];
+    stats8.forEach((st,i)=>{
+      const x=0.4+i*1.73;
+      s8.addShape(pres.shapes.RECTANGLE,{x,y:2.5,w:1.6,h:2.2,fill:{color:CARD},line:{color:BG2}});
+      s8.addText(st.num,{x,y:2.65,w:1.6,h:0.9,fontSize:28,bold:true,color:GOLD,fontFace:'Calibri',align:'center'});
+      s8.addText(st.label,{x,y:3.6,w:1.6,h:0.7,fontSize:9,color:WHITE,fontFace:'Calibri',align:'center'});
+    });
+    s8.addText('NeuGroup brings together senior executives across treasury, FP&A, tax, risk, and the broader Office of the CFO — in curated peer groups matched by role, sector, and company profile.',{x:0.4,y:5.0,w:6.7,h:1.0,fontSize:11,color:LBLUE,fontFace:'Calibri'});
+    s8.addText('Validated insight. Enabled outcomes.',{x:0.4,y:6.2,w:6.7,h:0.35,fontSize:12,color:WHITE,italic:true,fontFace:'Calibri',bold:true});
+
+    // ── SLIDE 9: Let's talk ─────────────────────────────────────────────────
+    const s9 = pres.addSlide();
+    addFurniture(s9,'LET\'S TALK');
+    s9.addText('Ready to explore what\nwe can build together?',{x:0.4,y:1.0,w:6.7,h:1.8,fontSize:28,bold:true,color:WHITE,fontFace:'Calibri',valign:'top'});
+    s9.addShape(pres.shapes.RECTANGLE,{x:0.4,y:3.0,w:6.7,h:0.05,fill:{color:GOLD},line:{color:GOLD}});
+    s9.addText('NeuGroup has a proven track record partnering with leading advisory and professional services firms to reach the senior finance practitioners who matter most. We\'d welcome a conversation about what we can build together.',{x:0.4,y:3.3,w:6.7,h:1.2,fontSize:11,color:LBLUE,fontFace:'Calibri'});
+    s9.addShape(pres.shapes.RECTANGLE,{x:0.4,y:5.0,w:2.5,h:2.0,fill:{color:CARD},line:{color:BG2}});
+    s9.addShape(pres.shapes.RECTANGLE,{x:0.4,y:5.0,w:2.5,h:0.35,fill:{color:BG2},line:{color:BG2}});
+    s9.addText('CONTACT',{x:0.45,y:5.07,w:2.4,h:0.22,fontSize:7,bold:true,color:GOLD,charSpacing:3,fontFace:'Calibri'});
+    s9.addText(rep+'\n'+repTitle+'\n'+repEmail,{x:0.45,y:5.45,w:2.4,h:1.4,fontSize:10,color:WHITE,fontFace:'Calibri',valign:'top'});
+    s9.addText('Validated insight. Enabled outcomes.',{x:0.4,y:7.5,w:6.7,h:0.35,fontSize:11,bold:true,italic:true,color:WHITE,fontFace:'Calibri'});
+
+    // Save
+    const filename = (partner+'_NeuGroup_Partnership').replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.pptx';
+    await pres.writeFile({fileName:filename});
+    showStatus('✓ Deck downloaded — '+filename,'ok');
+  } catch(e) {
+    showStatus('Error generating deck: '+e.message,'err');
+    console.error(e);
+  }
+  btn.disabled=false; btn.textContent='Download .pptx';
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+// Pre-populate with one EY-style history entry example
+setSponsorType('new');
+</script>
+</body>
+</html>
