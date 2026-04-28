@@ -992,19 +992,28 @@ async function downloadDocx() {
       para(`Happy to walk through this in detail. Once ${c.sponsor} has selected a tier and pricing model, we'll move to a formal engagement letter. Typical timeline from signed agreement to first meeting is 8–12 weeks.`),
       new Paragraph({spacing:{before:160},children:[new TextRun({text:'Pricing valid for 60 days from the date of this proposal.',italics:true,size:20})]}),
       new Paragraph({spacing:{before:280,after:120},children:[new TextRun({text:''})]}),
-      // Closing navy footer — matches SSS style
-      new Table({width:{size:9360,type:WidthType.DXA},columnWidths:[9360],
-        rows:[new TableRow({children:[new TableCell({
-          borders:{top:{style:BorderStyle.NONE},bottom:{style:BorderStyle.NONE},left:{style:BorderStyle.NONE},right:{style:BorderStyle.NONE}},
-          width:{size:9360,type:WidthType.DXA},
-          shading:{fill:NAVY,type:ShadingType.CLEAR},
-          margins:{top:200,bottom:200,left:240,right:240},
-          children:[
-            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:80},children:[new TextRun({text:"Ready to move forward? Let's get on a call to align the right option and next steps.",bold:true,size:24,color:'FFFFFF',font:'Calibri'})]}),
-            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:`${c.contact||'[Contact]'}  ·  ${c.cemail||'neugroup.com'}  ·  neugroup.com`,size:20,color:'BDD7EE',font:'Calibri'})]}),
-            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:0},children:[new TextRun({text:'Validated Insight. Enabled Outcomes.  ·  © 2026 NeuGroup, Inc. All rights reserved.',size:18,color:'9DC3E6',font:'Calibri'})]})
-          ]
-        })})]})
+      // Closing navy footer
+      new Table({
+        width:{size:9360,type:WidthType.DXA},
+        columnWidths:[9360],
+        rows:[
+          new TableRow({
+            children:[
+              new TableCell({
+                borders:{top:{style:BorderStyle.NONE},bottom:{style:BorderStyle.NONE},left:{style:BorderStyle.NONE},right:{style:BorderStyle.NONE}},
+                width:{size:9360,type:WidthType.DXA},
+                shading:{fill:NAVY,type:ShadingType.CLEAR},
+                margins:{top:200,bottom:200,left:240,right:240},
+                children:[
+                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:80},children:[new TextRun({text:"Ready to move forward? Let's get on a call to align the right option and next steps.",bold:true,size:24,color:'FFFFFF',font:'Calibri'})]}),
+                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:(c.contact||'[Contact]')+'  ·  '+(c.cemail||'neugroup.com')+'  ·  neugroup.com',size:20,color:'BDD7EE',font:'Calibri'})]}),
+                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:0},children:[new TextRun({text:'Validated Insight. Enabled Outcomes.  ·  © 2026 NeuGroup, Inc. All rights reserved.',size:18,color:'9DC3E6',font:'Calibri'})]})
+                ]
+              })
+            ]
+          })
+        ]
+      })
     ];
 
     const doc = new Document({
@@ -1382,16 +1391,27 @@ async function downloadSSSDocx() {
         })]})]
       }),
       new Paragraph({spacing:{before:200,after:120},children:[new TextRun({text:''})]}),
-      // Closing footer — matches Anaplan style
-      new Table({width:{size:9360,type:WidthType.DXA},columnWidths:[9360],
-        rows:[new TableRow({children:[new TableCell({borders:noBorders,width:{size:9360,type:WidthType.DXA},
-          shading:{fill:NAVY,type:ShadingType.CLEAR},margins:{top:200,bottom:200,left:240,right:240},
-          children:[
-            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:80},children:[new TextRun({text:"Ready to move forward? Let's get on a call to align the right option and next steps.",bold:true,size:24,color:WHITE,font:'Calibri'})]}),
-            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:`${c.rep}  ·  ${c.repEmail}  ·  neugroup.com`,size:20,color:'BDD7EE',font:'Calibri'})]}),
-            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:0},children:[new TextRun({text:`Validated Insight. Enabled Outcomes.  ·  © 2026 NeuGroup, Inc. All rights reserved.`,size:18,color:'9DC3E6',font:'Calibri'})]})
-          ]
-        })]})]
+      // Closing footer
+      new Table({
+        width:{size:9360,type:WidthType.DXA},
+        columnWidths:[9360],
+        rows:[
+          new TableRow({
+            children:[
+              new TableCell({
+                borders:noBorders,
+                width:{size:9360,type:WidthType.DXA},
+                shading:{fill:NAVY,type:ShadingType.CLEAR},
+                margins:{top:200,bottom:200,left:240,right:240},
+                children:[
+                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:80},children:[new TextRun({text:"Ready to move forward? Let's get on a call to align the right option and next steps.",bold:true,size:24,color:WHITE,font:'Calibri'})]}),
+                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:c.rep+'  ·  '+c.repEmail+'  ·  neugroup.com',size:20,color:'BDD7EE',font:'Calibri'})]}),
+                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:0},children:[new TextRun({text:'Validated Insight. Enabled Outcomes.  ·  © 2026 NeuGroup, Inc. All rights reserved.',size:18,color:'9DC3E6',font:'Calibri'})]})
+                ]
+              })
+            ]
+          })
+        ]
       })
     ];
 
@@ -1706,17 +1726,27 @@ async function downloadIPSDocx() {
       entTable,
       new Paragraph({spacing:{before:280,after:120},children:[new TextRun({text:''})]}),
       // Closing footer
-      new Table({width:{size:9360,type:WidthType.DXA},columnWidths:[9360],
-        rows:[new TableRow({children:[new TableCell({
-          borders:noBorders,width:{size:9360,type:WidthType.DXA},
-          shading:{fill:NAVY,type:ShadingType.CLEAR},
-          margins:{top:200,bottom:200,left:240,right:240},
-          children:[
-            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:80},children:[new TextRun({text:"Ready to move forward? Let's get on a call to align the right option and next steps.",bold:true,size:24,color:WHITE,font:'Calibri'})]}),
-            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:`${c.rep}  ·  ${c.repEmail}  ·  neugroup.com`,size:20,color:'BDD7EE',font:'Calibri'})]}),
-            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:0},children:[new TextRun({text:'Validated Insight. Enabled Outcomes.  ·  © 2026 NeuGroup, Inc. All rights reserved.',size:18,color:'9DC3E6',font:'Calibri'})]})
-          ]
-        })})]})
+      new Table({
+        width:{size:9360,type:WidthType.DXA},
+        columnWidths:[9360],
+        rows:[
+          new TableRow({
+            children:[
+              new TableCell({
+                borders:noBorders,
+                width:{size:9360,type:WidthType.DXA},
+                shading:{fill:NAVY,type:ShadingType.CLEAR},
+                margins:{top:200,bottom:200,left:240,right:240},
+                children:[
+                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:80},children:[new TextRun({text:"Ready to move forward? Let's get on a call to align the right option and next steps.",bold:true,size:24,color:WHITE,font:'Calibri'})]}),
+                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:c.rep+'  ·  '+c.repEmail+'  ·  neugroup.com',size:20,color:'BDD7EE',font:'Calibri'})]}),
+                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:0},children:[new TextRun({text:'Validated Insight. Enabled Outcomes.  ·  © 2026 NeuGroup, Inc. All rights reserved.',size:18,color:'9DC3E6',font:'Calibri'})]})
+                ]
+              })
+            ]
+          })
+        ]
+      })
     ];
 
     const doc = new Document({
@@ -1745,3 +1775,4 @@ document.getElementById('ips-date').value = new Date().toISOString().slice(0,10)
 </script>
 </body>
 </html>
+
