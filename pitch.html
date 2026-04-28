@@ -594,8 +594,63 @@ async function downloadPPTX() {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-// Pre-populate with one EY-style history entry example
 setSponsorType('new');
+
+// Pre-fill from proposal generator if data exists
+(function() {
+  try {
+    const raw = localStorage.getItem('nvc_proposal_data');
+    if(!raw) return;
+    const data = JSON.parse(raw);
+
+    // Map fields based on which product was last used
+    const product = data.lastProduct || 'nvc';
+    let sponsor = '', rep = '', repEmail = '', period = '', context = '';
+
+    if(product === 'nvc') {
+      sponsor  = data.sponsor || '';
+      rep      = data.contact || '';
+      repEmail = data.cemail || '';
+      period   = data.qdate ? new Date(data.qdate).toLocaleDateString('en-US',{month:'long',year:'numeric'}) : '';
+      context  = data.notes || '';
+    } else if(product === 'sss') {
+      sponsor  = data.sss_sponsor || '';
+      rep      = data.sss_rep || '';
+      repEmail = data.sss_rep_email || '';
+      period   = data.sss_period || '';
+      context  = data.sss_notes || '';
+    } else if(product === 'ips') {
+      sponsor  = data.ips_sponsor || '';
+      rep      = data.ips_rep || '';
+      repEmail = data.ips_rep_email || '';
+      period   = data.ips_period || '';
+      context  = data.ips_notes || '';
+    }
+
+    const fields = [
+      ['partner', sponsor],
+      ['rep', rep],
+      ['rep-email', repEmail],
+      ['period', period],
+      ['context', context],
+    ];
+
+    let anyFilled = false;
+    fields.forEach(([id, val]) => {
+      if(val) {
+        const el = document.getElementById(id);
+        if(el && !el.value) { el.value = val; anyFilled = true; }
+      }
+    });
+
+    if(anyFilled) {
+      const notice = document.createElement('div');
+      notice.style.cssText = 'background:var(--gold-light);border:1px solid var(--gold);border-radius:var(--radius-sm);padding:8px 14px;font-size:12px;color:var(--navy);margin-bottom:1rem;display:flex;align-items:center;gap:8px';
+      notice.innerHTML = '✦ <strong>Pre-filled</strong> from your last proposal generator session. Review and edit as needed.';
+      document.querySelector('.main').insertBefore(notice, document.querySelector('.card'));
+    }
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>
