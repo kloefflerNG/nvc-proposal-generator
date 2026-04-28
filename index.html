@@ -224,7 +224,7 @@
         <span class="section-header-title">Sponsor details</span>
       </div>
       <div class="row2">
-        <div class="field"><label>Sponsor name</label><input id="sponsor" value="Advent International"/></div>
+        <div class="field"><label>Sponsor name</label><input id="sponsor" placeholder="e.g. Advent International"/></div>
         <div class="field"><label>NeuGroup rep name</label><input id="contact" placeholder="e.g. Kristy Loeffler"/></div>
       </div>
       <div class="row2">
@@ -816,9 +816,8 @@ Subject: [subject line]
 }
 
 function checkReady() {
-  const ready = generatedProposal && generatedEmail;
-  document.getElementById('btn-docx').disabled = !ready;
-  document.getElementById('btn-dl-email').disabled = !ready;
+  document.getElementById('btn-docx').disabled = !generatedProposal;
+  document.getElementById('btn-dl-email').disabled = !generatedEmail;
 }
 
 // ── Save to Box ─────────────────────────────────────────────────────────────
@@ -1003,7 +1002,7 @@ async function downloadDocx() {
                 margins:{top:200,bottom:200,left:240,right:240},
                 children:[
                   new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:80},children:[new TextRun({text:"Ready to move forward? Let's get on a call to align the right option and next steps.",bold:true,size:24,color:'FFFFFF',font:'Calibri'})]}),
-                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:(c.contact||'[Contact]')+'  ·  '+(c.cemail||'neugroup.com')+'  ·  neugroup.com',size:20,color:'BDD7EE',font:'Calibri'})]}),
+                  new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:(c.contact||c.rep||'NeuGroup')+'  ·  '+(c.cemail||'neugroup.com')+'  ·  neugroup.com',size:20,color:'BDD7EE',font:'Calibri'})]}),
                   new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:0},children:[new TextRun({text:'Validated Insight. Enabled Outcomes.  ·  © 2026 NeuGroup, Inc. All rights reserved.',size:18,color:'9DC3E6',font:'Calibri'})]})
                 ]
               })
@@ -1069,7 +1068,7 @@ const SIDEBAR_CONTENT = {
   },
   ips: {
     title: 'In-Person Session',
-    intro: 'Build a partnership proposal for an in-person event. Fill in the event details and entitlements — all are pre-filled but fully editable.',
+    intro: 'Build a partnership proposal for an in-person event. Fill in the event details and entitlements — all are pre-filled but fully editable. Follow the five steps below.',
     steps: [
       { n:'1', label:'Partner details', desc:'Partner name, your contact, NeuGroup rep info, and the period.' },
       { n:'2', label:'Event details', desc:'Event name, season, dates, location, format, dinner, partnership fee, payment terms, and term end date.' },
@@ -1186,9 +1185,8 @@ function switchSSSTab(t) {
 }
 
 function checkSSSReady() {
-  const ready = sssProposal && sssEmail;
-  document.getElementById('sss-btn-docx').disabled = !ready;
-  document.getElementById('sss-btn-dl-email').disabled = !ready;
+  document.getElementById('sss-btn-docx').disabled = !sssProposal;
+  document.getElementById('sss-btn-dl-email').disabled = !sssEmail;
 }
 
 function showSSSStatus(msg, type) {
@@ -1571,9 +1569,8 @@ function showIPSStatus(msg, type) {
 }
 
 function checkIPSReady() {
-  const ready = ipsProposal && ipsEmail;
-  document.getElementById('ips-btn-docx').disabled = !ready;
-  document.getElementById('ips-btn-dl-email').disabled = !ready;
+  document.getElementById('ips-btn-docx').disabled = !ipsProposal;
+  document.getElementById('ips-btn-dl-email').disabled = !ipsEmail;
 }
 
 async function genIPSProposal() {
