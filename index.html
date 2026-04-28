@@ -1200,9 +1200,7 @@ async function downloadSSSDocx() {
     const children = [
       headerTable,
       new Paragraph({spacing:{before:240,after:120},children:[new TextRun({text:''})]}),
-      // Rep contact line
-      new Paragraph({spacing:{before:0,after:200},alignment:AlignmentType.RIGHT,
-        children:[new TextRun({text:`${c.rep}  ·  ${c.repEmail}`,size:20,color:'666666',font:'Calibri'})]}),
+
       ...introParas,
       new Paragraph({spacing:{before:200,after:120},children:[new TextRun({text:''})]}),
       navyBanner('Why NeuGroup'),
@@ -1221,13 +1219,14 @@ async function downloadSSSDocx() {
         })]})]
       }),
       new Paragraph({spacing:{before:200,after:120},children:[new TextRun({text:''})]}),
-      // Closing
+      // Closing footer — matches Anaplan style
       new Table({width:{size:9360,type:WidthType.DXA},columnWidths:[9360],
         rows:[new TableRow({children:[new TableCell({borders:noBorders,width:{size:9360,type:WidthType.DXA},
-          shading:{fill:NAVY,type:ShadingType.CLEAR},margins:{top:160,bottom:160,left:240,right:240},
+          shading:{fill:NAVY,type:ShadingType.CLEAR},margins:{top:200,bottom:200,left:240,right:240},
           children:[
-            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:"Ready to move forward? Let's get on a call to align the right option and next steps.",bold:true,size:22,color:WHITE,font:'Calibri'})]}),
-            new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:`${c.rep}  ·  ${c.repEmail}  ·  neugroup.com`,size:20,color:'BDD7EE',font:'Calibri'})]})
+            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:80},children:[new TextRun({text:"Ready to move forward? Let's get on a call to align the right option and next steps.",bold:true,size:24,color:WHITE,font:'Calibri'})]}),
+            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:60},children:[new TextRun({text:`${c.rep}  ·  ${c.repEmail}  ·  neugroup.com`,size:20,color:'BDD7EE',font:'Calibri'})]}),
+            new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:0,after:0},children:[new TextRun({text:`Validated Insight. Enabled Outcomes.  ·  © 2026 NeuGroup, Inc. All rights reserved.`,size:18,color:'9DC3E6',font:'Calibri'})]})
           ]
         })]})]
       })
@@ -1258,6 +1257,7 @@ updateSSSPricing();
 </script>
 </body>
 </html>
+
 
 
 
