@@ -1827,9 +1827,49 @@ async function downloadIPSDocx() {
   checkIPSReady();
 }
 
+// ── localStorage sync ────────────────────────────────────────────────────────
+function saveToStorage() {
+  const data = {
+    sponsor: g('sponsor'),
+    contact: g('contact'),
+    cemail: g('cemail'),
+    ctitle: g('ctitle'),
+    group: g('group'),
+    qdate: g('qdate'),
+    notes: g('notes'),
+    emailnotes: g('emailnotes'),
+    // SSS fields
+    sss_sponsor: g('sss-sponsor'),
+    sss_contact: g('sss-contact'),
+    sss_email: g('sss-email'),
+    sss_rep: g('sss-rep'),
+    sss_rep_email: g('sss-rep-email'),
+    sss_period: g('sss-period'),
+    sss_notes: g('sss-notes'),
+    // IPS fields
+    ips_sponsor: g('ips-sponsor'),
+    ips_contact: g('ips-contact'),
+    ips_rep: g('ips-rep'),
+    ips_rep_email: g('ips-rep-email'),
+    ips_period: g('ips-period'),
+    ips_notes: g('ips-notes'),
+    lastProduct: currentProduct
+  };
+  try { localStorage.setItem('nvc_proposal_data', JSON.stringify(data)); } catch(e) {}
+}
+
 // ── Init ─────────────────────────────────────────────────────────────────────
 updatePricing();
 updateSidebar('nvc');
+
+// Attach storage save to all key fields
+['sponsor','contact','cemail','ctitle','group','qdate','notes','emailnotes',
+ 'sss-sponsor','sss-contact','sss-email','sss-rep','sss-rep-email','sss-period','sss-notes',
+ 'ips-sponsor','ips-contact','ips-rep','ips-rep-email','ips-period','ips-notes'
+].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('input', saveToStorage);
+});
 updateSSSPricing();
 document.getElementById('ips-date').value = new Date().toISOString().slice(0,10);
 </script>
