@@ -204,36 +204,10 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-card">
-        <div class="sidebar-title">How to use this tool</div>
-        <p style="font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:1rem;">This generator creates a customized NeuGroup proposal and outreach email for any PE sponsor. Follow the five steps in order.</p>
-
-        <div class="sidebar-step">
-          <div class="sidebar-step-label"><span class="sidebar-step-num">1</span> Sponsor details</div>
-          <p>Enter the firm name, your contact, their title and email, the functional group you're proposing, and today's date.</p>
-        </div>
-        <div class="sidebar-divider"></div>
-        <div class="sidebar-step">
-          <div class="sidebar-step-label"><span class="sidebar-step-num">2</span> Tier 1 — Single meeting</div>
-          <p>Set member count, meeting format (in-person or virtual), and whether to include a research project. Price builds automatically.</p>
-        </div>
-        <div class="sidebar-divider"></div>
-        <div class="sidebar-step">
-          <div class="sidebar-step-label"><span class="sidebar-step-num">3</span> Tier 2 — Annual program</div>
-          <p>Set members, number of in-person and virtual sessions per year, and research. Toggle off either tier to present only one option.</p>
-        </div>
-        <div class="sidebar-divider"></div>
-        <div class="sidebar-step">
-          <div class="sidebar-step-label"><span class="sidebar-step-num">4</span> Additional context</div>
-          <p>Add sponsor background — how you know them, their priorities, timing. Add tone notes for the email (e.g. "keep it short, we met at a conference").</p>
-        </div>
-        <div class="sidebar-divider"></div>
-        <div class="sidebar-step">
-          <div class="sidebar-step-label"><span class="sidebar-step-num">5</span> Generate &amp; export</div>
-          <p>Click Generate proposal, then Generate email. Review both previews. Click <strong>Download .docx</strong> for the formatted proposal and <strong>Download email</strong> for the outreach copy.</p>
-        </div>
-        <div class="sidebar-note">
-          💡 <strong>Billing note:</strong> The proposal includes a callout that billing is flexible — sponsors can recharge fees to portcos or NeuGroup can invoice directly.
-        </div>
+        <div class="sidebar-title" id="sidebar-title">How to use this tool</div>
+        <p id="sidebar-intro" style="font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:1rem;"></p>
+        <div id="sidebar-steps"></div>
+        <div class="sidebar-note" id="sidebar-note" style="display:none"></div>
       </div>
     </div>
 
@@ -1068,6 +1042,66 @@ async function downloadDocx() {
   checkReady();
 }
 
+// ── Sidebar content per product ──────────────────────────────────────────────
+const SIDEBAR_CONTENT = {
+  nvc: {
+    title: 'NVC Peer Group',
+    intro: 'Generate a fully formatted peer group proposal for a PE sponsor. Pricing builds automatically from your inputs.',
+    steps: [
+      { n:'1', label:'Sponsor details', desc:'Sponsor name, your contact, their title and email, functional group, and quote date.' },
+      { n:'2', label:'Tier 1 — Single meeting', desc:'Set member count, meeting format, and research option. Price calculates automatically.' },
+      { n:'3', label:'Tier 2 — Annual program', desc:'Set members, in-person and virtual sessions, and research. Toggle off either tier to show only one option.' },
+      { n:'4', label:'Additional context', desc:'Sponsor background, priorities, how you know them. Add tone notes for the email.' },
+      { n:'5', label:'Generate & export', desc:'Generate proposal copy and outreach email, then download the branded .docx.' },
+    ],
+    note: '💡 <strong>Billing note:</strong> The proposal includes a callout that billing is flexible — sponsors can recharge fees to portcos or NeuGroup can invoice directly.'
+  },
+  sss: {
+    title: 'Sponsored Solution Session',
+    intro: 'Build a session-by-session proposal for a sponsor. Add multiple sessions if needed — pricing totals automatically.',
+    steps: [
+      { n:'1', label:'Sponsor details', desc:'Sponsor name, your contact, NeuGroup rep info, and the period.' },
+      { n:'2', label:'Session configuration', desc:'Add one or more sessions — name, format (virtual 60 or 90 min), audience, content focus, and price per session.' },
+      { n:'3', label:'Additional context', desc:'Sponsor background and email tone. The AI uses this to write a tailored intro paragraph.' },
+      { n:'4', label:'Generate & export', desc:'Generate the intro paragraph and outreach email, then download the branded .docx.' },
+    ],
+    note: '💡 Each session gets its own "Option N" table in the proposal. Add sessions for multi-option proposals.'
+  },
+  ips: {
+    title: 'In-Person Session',
+    intro: 'Build a partnership proposal for an in-person event. Fill in the event details and entitlements — all are pre-filled but fully editable.',
+    steps: [
+      { n:'1', label:'Partner details', desc:'Partner name, your contact, NeuGroup rep info, and the period.' },
+      { n:'2', label:'Event details', desc:'Event name, season, dates, location, format, dinner, partnership fee, payment terms, and term end date.' },
+      { n:'3', label:'Partner access & entitlements', desc:"Pre-filled with standard entitlements. Edit any row, remove ones that don't apply, or add new ones." },
+      { n:'4', label:'Additional context', desc:'Partner background and email tone for the AI-written intro.' },
+      { n:'5', label:'Generate & export', desc:'Generate the intro and outreach email, then download the branded .docx.' },
+    ],
+    note: '💡 The Event Details Summary and Partner Access tables in the .docx pull directly from your inputs — no extra formatting needed.'
+  }
+};
+
+function updateSidebar(p) {
+  const d = SIDEBAR_CONTENT[p];
+  if(!d) return;
+  document.getElementById('sidebar-title').textContent = d.title;
+  document.getElementById('sidebar-intro').textContent = d.intro;
+  document.getElementById('sidebar-steps').innerHTML = d.steps.map((s,i) => `
+    <div class="sidebar-step">
+      <div class="sidebar-step-label"><span class="sidebar-step-num">${s.n}</span> ${s.label}</div>
+      <p>${s.desc}</p>
+    </div>
+    ${i < d.steps.length-1 ? '<div class="sidebar-divider"></div>' : ''}
+  `).join('');
+  const noteEl = document.getElementById('sidebar-note');
+  if(d.note) {
+    noteEl.innerHTML = d.note;
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.style.display = 'none';
+  }
+}
+
 // ── Product switcher ─────────────────────────────────────────────────────────
 let currentProduct = 'nvc';
 function switchProduct(p) {
@@ -1079,6 +1113,7 @@ function switchProduct(p) {
     el.style.minWidth = '0';
     document.getElementById('prod-'+x).classList.toggle('on', x===p);
   });
+  updateSidebar(p);
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -1794,9 +1829,11 @@ async function downloadIPSDocx() {
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 updatePricing();
+updateSidebar('nvc');
 updateSSSPricing();
 document.getElementById('ips-date').value = new Date().toISOString().slice(0,10);
 </script>
 </body>
 </html>
+
 
