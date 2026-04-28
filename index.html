@@ -125,8 +125,8 @@
   footer { text-align: center; padding: 1.5rem; font-size: 11px; color: var(--muted); }
 
   /* ── Sidebar layout ── */
-  .page-layout { display: flex; gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
-  .sidebar { width: 240px; min-width: 240px; position: sticky; top: 72px; align-self: flex-start; }
+  .page-layout { display: flex; gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem 4rem; align-items: flex-start; }
+  .sidebar { width: 240px; min-width: 240px; flex-shrink: 0; position: sticky; top: 72px; }
   .sidebar-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
   .sidebar-title { font-size: 12px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 2px solid var(--navy); }
   .sidebar-step { margin-bottom: 1rem; }
@@ -135,7 +135,7 @@
   .sidebar-step p { font-size: 12px; color: var(--muted); line-height: 1.55; padding-left: 25px; }
   .sidebar-divider { height: 1px; background: var(--border); margin: .75rem 0; }
   .sidebar-note { background: #EFF6FF; border-radius: var(--radius-sm); padding: .7rem; font-size: 11px; color: #1E40AF; line-height: 1.55; margin-top: .75rem; }
-  .main-content { flex: 1; min-width: 0; }
+  .main-content { flex: 1; min-width: 0; width: 0; }
   @media(max-width:900px){ .page-layout{ flex-direction: column; } .sidebar{ width:100%; min-width:0; position:static; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
@@ -220,7 +220,7 @@
     <div class="page-sub">Fill in the fields below, generate the AI-written sections, then download.</div>
 
     <!-- NVC form -->
-    <div id="form-nvc">
+    <div id="form-nvc" style="width:100%;min-width:0">
 
     <!-- Step 1: Sponsor Details -->
     <div class="card">
@@ -364,7 +364,7 @@
     </div><!-- end form-nvc -->
 
     <!-- SSS form -->
-    <div id="form-sss" style="display:none">
+    <div id="form-sss" style="display:none;width:100%;min-width:0">
 
       <!-- SSS Step 1: Sponsor details -->
       <div class="card">
@@ -459,7 +459,7 @@
     </div><!-- end form-sss -->
 
     <!-- IPS form -->
-    <div id="form-ips" style="display:none">
+    <div id="form-ips" style="display:none;width:100%;min-width:0">
 
       <!-- IPS Step 1: Partner details -->
       <div class="card">
@@ -1051,12 +1051,13 @@ async function downloadDocx() {
 let currentProduct = 'nvc';
 function switchProduct(p) {
   currentProduct = p;
-  document.getElementById('form-nvc').style.display = p==='nvc'?'block':'none';
-  document.getElementById('form-sss').style.display = p==='sss'?'block':'none';
-  document.getElementById('form-ips').style.display = p==='ips'?'block':'none';
-  document.getElementById('prod-nvc').classList.toggle('on', p==='nvc');
-  document.getElementById('prod-sss').classList.toggle('on', p==='sss');
-  document.getElementById('prod-ips').classList.toggle('on', p==='ips');
+  ['nvc','sss','ips'].forEach(x => {
+    const el = document.getElementById('form-'+x);
+    el.style.display = x===p ? 'block' : 'none';
+    el.style.width = '100%';
+    el.style.minWidth = '0';
+    document.getElementById('prod-'+x).classList.toggle('on', x===p);
+  });
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -1777,4 +1778,5 @@ document.getElementById('ips-date').value = new Date().toISOString().slice(0,10)
 </script>
 </body>
 </html>
+
 
