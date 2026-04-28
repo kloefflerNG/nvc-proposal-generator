@@ -480,7 +480,6 @@ async function downloadPPTX() {
     s1.addText('NeuGroup +\n'+partner, { x:0.45, y:1.75, w:6.50, h:2.60, fontSize:52, bold:true, color:WHITE, fontFace:'Calibri', valign:'top' });
     s1.addText('A natural complement to\n'+partner+"'s "+g('practice'), { x:0.45, y:4.50, w:6.50, h:0.90, fontSize:14, color:LBLUE, fontFace:'Calibri', valign:'top' });
     // Lower dark area
-    slide1 = s1;
     s1.addShape(pres.shapes.RECTANGLE, { x:0, y:6.46, w:7.5, h:0.07, fill:{color:GOLD}, line:{color:GOLD} });
     s1.addShape(pres.shapes.RECTANGLE, { x:0, y:6.50, w:7.5, h:3.50, fill:{color:BG2}, line:{color:BG2} });
     s1.addText('Where '+partner+"'s frameworks meet\nthe practitioners who execute them.", { x:0.45, y:7.10, w:6.50, h:1.10, fontSize:13, color:WHITE, italic:true, fontFace:'Calibri', valign:'top' });
@@ -523,7 +522,6 @@ async function downloadPPTX() {
       const x = 0.40 + col*3.45;
       const y = 3.45 + row*2.30;
       const st = stats[i];
-      slide.addShape = s4.addShape.bind(s4);
       s4.addShape(pres.shapes.RECTANGLE, { x, y, w:3.30, h:2.10, fill:{color:CARD2}, line:{color:CARD2} });
       s4.addShape(pres.shapes.RECTANGLE, { x, y, w:3.30, h:0.08, fill:{color:st.accent}, line:{color:st.accent} });
       s4.addText(st.num, { x, y:y+0.25, w:3.30, h:1.00, fontSize:42, bold:true, color:st.accent, fontFace:'Calibri', align:'center' });
