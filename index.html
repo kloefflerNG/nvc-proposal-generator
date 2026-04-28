@@ -6,11 +6,14 @@
 <title>NVC Proposal Generator — NeuGroup</title>
 <style>
   :root {
-    --navy: #1F3864;
+    --navy: #0F1F3D;
+    --navy-mid: #1a2f52;
     --blue: #2E5FA3;
     --lblue: #D9E2F3;
     --accent: #4472C4;
-    --bg: #F7F8FA;
+    --gold: #C9A84C;
+    --gold-light: #F5E6C0;
+    --bg: #F4F6F9;
     --surface: #FFFFFF;
     --border: #E2E6ED;
     --text: #1A1A2E;
@@ -42,11 +45,13 @@
 
   /* ── App shell ── */
   #app { display: none; min-height: 100vh; }
-  .topbar { background: var(--navy); color: #fff; padding: .75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .topbar-brand { font-size: 16px; font-weight: 700; }
-  .topbar-sub { font-size: 11px; opacity: .7; font-style: italic; }
-  .topbar-right { font-size: 12px; opacity: .6; cursor: pointer; }
-  .topbar-right:hover { opacity: 1; }
+  .topbar { background: var(--navy); color: #fff; position: sticky; top: 0; z-index: 100; }
+  .topbar-inner { padding: .6rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .topbar-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; color: var(--gold); text-transform: uppercase; }
+  .topbar-brand { font-size: 26px; font-weight: 800; color: #fff; line-height: 1.1; margin: .2rem 0 .15rem; }
+  .topbar-tagline { font-size: 12px; color: rgba(255,255,255,.55); }
+  .topbar-right { font-size: 12px; color: rgba(255,255,255,.5); cursor: pointer; padding: 6px 12px; border: 1px solid rgba(255,255,255,.15); border-radius: 6px; }
+  .topbar-right:hover { color: #fff; border-color: rgba(255,255,255,.4); }
 
   /* main replaced by page-layout */
   .page-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: .25rem; }
@@ -112,7 +117,18 @@
   @keyframes sp { to { transform: rotate(360deg); } }
   .spin { display: inline-block; width: 12px; height: 12px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: sp .6s linear infinite; }
 
-  .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--lblue); color: var(--navy); font-size: 11px; font-weight: 700; margin-right: 6px; }
+  .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 11px; font-weight: 700; margin-right: 6px; }
+  .prod-tab { padding: 6px 16px; border: 1px solid rgba(255,255,255,.15); border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; background: transparent; color: rgba(255,255,255,.6); transition: all .15s; }
+  .prod-tab:hover { color: #fff; border-color: rgba(255,255,255,.4); }
+  .prod-tab.on { background: var(--gold); color: var(--navy); border-color: var(--gold); font-weight: 700; }
+  .card-title { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .9rem; }
+  .section-header-title { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .1em; }
+  .sidebar-title { font-size: 11px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 2px solid var(--gold); }
+  .sidebar-step-num { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .tb.on { background: var(--gold-light); color: var(--navy); border-color: var(--gold); font-weight: 600; }
+  .tab.on { color: var(--navy); border-bottom-color: var(--gold); font-weight: 600; }
+  .pcard.hi { border-color: var(--gold); background: var(--gold-light); }
+  .pcard .pv { font-size: 20px; font-weight: 700; color: var(--navy); }
   .section-header { display: flex; align-items: center; margin-bottom: 1rem; }
   .section-header-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
 
@@ -145,7 +161,8 @@
 <!-- ── LOGIN ── -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="login-logo">NeuGroup</div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:4px">NeuGroup Intelligence</div>
+    <div class="login-logo" style="font-size:24px;font-weight:800;color:var(--navy)">Proposal Generator</div>
     <div class="login-tagline">Connect. Exchange. Distill.</div>
     <div class="login-title">NVC Proposal Generator</div>
     <div class="login-sub">Enter your team password to continue</div>
@@ -158,22 +175,23 @@
 <!-- ── APP ── -->
 <div id="app">
   <div class="topbar">
-    <div>
-      <div class="topbar-brand">NeuGroup — NVC Proposal Generator</div>
-      <div class="topbar-sub">Connect. Exchange. Distill.</div>
+    <div class="topbar-inner">
+      <div>
+        <div class="topbar-eyebrow">NeuGroup Intelligence &nbsp;·&nbsp; Proposal Generator</div>
+        <div class="topbar-brand">NeuGroup Proposal Generator</div>
+        <div class="topbar-tagline">Validated Insight. Enabled Outcomes.</div>
+      </div>
+      <div class="topbar-right" onclick="logout()">Sign out</div>
     </div>
-    <div class="topbar-right" onclick="logout()">Sign out</div>
   </div>
 
-  <!-- Product selector — fixed above layout -->
-  <div style="max-width:1200px;margin:0 auto;padding:0 1rem;padding-top:1.25rem">
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-title">Proposal type</div>
-      <div class="toggles">
-        <div class="tb on" id="prod-nvc" onclick="switchProduct('nvc')">NVC Peer Group</div>
-        <div class="tb" id="prod-sss" onclick="switchProduct('sss')">Sponsored Solution Session</div>
-        <div class="tb" id="prod-ips" onclick="switchProduct('ips')">In-Person Session</div>
-      </div>
+  <!-- Product selector -->
+  <div style="background:var(--navy-mid);border-bottom:1px solid rgba(255,255,255,.08);padding:.75rem 1.5rem">
+    <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:.5rem">
+      <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.06em;text-transform:uppercase;margin-right:.5rem">Proposal type</span>
+      <button class="prod-tab on" id="prod-nvc" onclick="switchProduct('nvc')">NVC Peer Group</button>
+      <button class="prod-tab" id="prod-sss" onclick="switchProduct('sss')">Sponsored Solution Session</button>
+      <button class="prod-tab" id="prod-ips" onclick="switchProduct('ips')">In-Person Session</button>
     </div>
   </div>
 
@@ -1776,6 +1794,3 @@ document.getElementById('ips-date').value = new Date().toISOString().slice(0,10)
 </script>
 </body>
 </html>
-
-
-
